@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenAiFunction xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Merge duplicate records</description>
+    <developerName>Merge_Duplicates_Using_FieldValues</developerName>
+    <invocationTarget>DF_MergeDuplicateRecords</invocationTarget>
+    <invocationTargetType>apex</invocationTargetType>
+    <isConfirmationRequired>false</isConfirmationRequired>
+    <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+    <localDeveloperName>Merge_Duplicates_Using_FieldValues</localDeveloperName>
+    <masterLabel>Merge Duplicates Using Field Values.</masterLabel>
+    <progressIndicatorMessage>Merging In-Progress</progressIndicatorMessage>
+</GenAiFunction>

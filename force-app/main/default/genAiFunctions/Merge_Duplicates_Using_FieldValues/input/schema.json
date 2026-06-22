@@ -1,0 +1,32 @@
+{
+  "required" : [ "duplicateIds", "masterId", "objectName" ],
+  "unevaluatedProperties" : false,
+  "properties" : {
+    "duplicateIds" : {
+      "title" : "duplicateIds",
+      "description" : "Duplicate Record Ids",
+      "maxItems" : 2000,
+      "items" : {
+        "lightning:type" : "lightning__recordIdType"
+      },
+      "lightning:type" : "lightning__listType",
+      "lightning:isPII" : false,
+      "copilotAction:isUserInput" : false
+    },
+    "masterId" : {
+      "title" : "masterId",
+      "description" : "Master Record for merging",
+      "lightning:type" : "lightning__recordIdType",
+      "lightning:isPII" : false,
+      "copilotAction:isUserInput" : false
+    },
+    "objectName" : {
+      "title" : "objectName",
+      "description" : "Object Name",
+      "lightning:type" : "lightning__textType",
+      "lightning:isPII" : false,
+      "copilotAction:isUserInput" : false
+    }
+  },
+  "lightning:type" : "lightning__objectType"
+}
