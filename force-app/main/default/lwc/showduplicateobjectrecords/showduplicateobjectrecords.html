@@ -1,13 +1,11 @@
 <template>
     <lightning-card title="Duplicate Records">
-
         <div class="container">
             <template for:each={duplicateRecords} for:item="record">
 
                 <div key={record.recordId}
                      class="card slds-card slds-p-around_medium slds-m-around_small">
-
-                    <div class="slds-grid slds-wrap">
+                     <div class="slds-grid slds-wrap">
 
                         <div class="slds-col slds-size_1-of-1">
                             <h2 class="title">

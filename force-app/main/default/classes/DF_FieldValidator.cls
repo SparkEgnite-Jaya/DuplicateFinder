@@ -4,28 +4,19 @@ public class DF_FieldValidator {
     private static List<String> testDataFields;
 
     public class FieldValidatorInputWrapper {
-        @InvocableVariable(required=true)
-        public String entityType;
+        @InvocableVariable(required=true) public String entityType;
     }
     
     public class FieldValidatorOutputWrapper {
-        @InvocableVariable
-        public Boolean success;
-        
-        @InvocableVariable
-        public List<String> supportedFields;
-        
-        @InvocableVariable
-        public List<String> unsupportedFields;
-        
-        @InvocableVariable
-        public String message;
+        @InvocableVariable public Boolean success;
+        @InvocableVariable public List<String> supportedFields;
+        @InvocableVariable public List<String> unsupportedFields;
+        @InvocableVariable public String message;
     }
     
     @InvocableMethod(label='Validate Duplicate Fields'
                      description='Validates duplicate matching fields configured in metadata')
     public static List<FieldValidatorOutputWrapper> validateFields(List<FieldValidatorInputWrapper> lstFieldValidatorInputWrapper) {
-        
         List<FieldValidatorOutputWrapper> lstFieldValidatorOutputWrapper = new List<FieldValidatorOutputWrapper>();
         
         for(FieldValidatorInputWrapper fieldValidatorInputWrapper : lstFieldValidatorInputWrapper) {
@@ -36,7 +27,6 @@ public class DF_FieldValidator {
     }
     
     private static FieldValidatorOutputWrapper processRequest(FieldValidatorInputWrapper fieldValidatorInputWrapper) {
-        
         FieldValidatorOutputWrapper fieldValidatorOutputWrapper = initializeOutput();
         
         try {
@@ -48,7 +38,7 @@ public class DF_FieldValidator {
                 return fieldValidatorOutputWrapper;
             }
             
-            validateConfiguredFields(fieldValidatorInputWrapper.entityType,configuredFields,fieldValidatorOutputWrapper);
+            validateConfiguredFields(fieldValidatorInputWrapper.entityType, configuredFields, fieldValidatorOutputWrapper);
             setResultStatus(fieldValidatorOutputWrapper);
         } catch(Exception ex) {
             fieldValidatorOutputWrapper.success = false;
@@ -60,7 +50,6 @@ public class DF_FieldValidator {
     
     //Retrieves duplicate matching fields configured for the specified object from Custom Metadata.
     private static List<String> getConfiguredFields(String objectName) {
-        
         if(Test.isRunningTest() && testDataFields != null) {
             return testDataFields;
         }
@@ -78,7 +67,6 @@ public class DF_FieldValidator {
     
     //Initializes and returns an empty output wrapper.
     private static FieldValidatorOutputWrapper initializeOutput() {
-        
         FieldValidatorOutputWrapper fieldValidatorOutputWrapper = new FieldValidatorOutputWrapper();
         fieldValidatorOutputWrapper.supportedFields = new List<String>();
         fieldValidatorOutputWrapper.unsupportedFields = new List<String>();
@@ -88,7 +76,6 @@ public class DF_FieldValidator {
     
     //Returns all fields available on the specified object.
     private static Map<String, Schema.SObjectField> getFieldMap(String objectName) {
-        
         return Schema.getGlobalDescribe()
                      .get(objectName)
                      .getDescribe()
@@ -98,7 +85,6 @@ public class DF_FieldValidator {
     
     //Validates configured fields and categorizes them into supported and unsupported fields.
     private static void validateConfiguredFields(String objectName,List<String> configuredFields,FieldValidatorOutputWrapper result) {
-        
         Map<String, Schema.SObjectField> objectFieldsMap = getFieldMap(objectName);
         
         for(String fieldName : configuredFields) {
@@ -113,7 +99,6 @@ public class DF_FieldValidator {
     
     //Checks whether the field exists and is eligible for duplicate matching.
     private static Boolean isSupportedField(String fieldName,Map<String, Schema.SObjectField> objectFieldsMap) {
-        
         if(!objectFieldsMap.containsKey(fieldName)) {
             return false;
         }
@@ -128,7 +113,6 @@ public class DF_FieldValidator {
     
     //field type is supported for duplicate detection.
     private static Boolean isSupportedType(Schema.DisplayType fieldType) {
-        
         return fieldType == Schema.DisplayType.String
             || fieldType == Schema.DisplayType.Email
             || fieldType == Schema.DisplayType.Phone
@@ -144,7 +128,6 @@ public class DF_FieldValidator {
     
     //Sets the final validation status and message.
     private static void setResultStatus(FieldValidatorOutputWrapper fieldValidatorOutputWrapper) {
-        
         fieldValidatorOutputWrapper.success = fieldValidatorOutputWrapper.unsupportedFields.isEmpty();
         fieldValidatorOutputWrapper.message = fieldValidatorOutputWrapper.success ? 'All configured fields are supported.'
             																	  : 'Some configured fields are unsupported.';

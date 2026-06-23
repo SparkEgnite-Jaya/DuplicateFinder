@@ -4,84 +4,78 @@ private class DF_MergeDuplicateRecordsTest {
     @TestSetup
     static void createTestData() {
         INSERT new List<Account>{
-            new Account( Name = 'Master Account', Phone = null, Website = null ),
-            new Account( Name = 'Duplicate 1', Phone = '9876543210', Website = 'www.test1.com' ),
-            new Account( Name = 'Duplicate 2', Phone = '9999999999', Website = 'www.test2.com' )
+            TestDataFactoryAccount.buildAccount('Master Account',null,null),
+            TestDataFactoryAccount.buildAccount('Duplicate 1','9876543210',null,'www.test1.com'),
+            TestDataFactoryAccount.buildAccount('Duplicate 2','9999999999',null,'www.test2.com') 
         };
     }
     
     @IsTest
-    static void mergeDuplicates_UpdatesMasterRecord_WhenDuplicateContainsValues() {
+    static void mergeDuplicates_itUpdatesMasterRecord_whenDuplicateContainsValues() {
+        List<Account> accounts = TestDataFactoryAccount.getAll();
         
-        List<Account> accounts = [SELECT Id, Phone, Website FROM Account ORDER BY CreatedDate ASC];
-        
-        Account masterAcc = accounts[0];
-        Account duplicateAccount1 = accounts[1];
-        Account duplicateAccount2 = accounts[2];
+        Account masterAccount = accounts[0];
+        Account firstDuplicateRecord = accounts[1];
+        Account secondDuplicateRecord = accounts[2];
         
         DF_MergeDuplicateRecords.MergeDuplicateInput mergeDuplicateInput = new DF_MergeDuplicateRecords.MergeDuplicateInput();
         mergeDuplicateInput.objectName = 'Account';
-        mergeDuplicateInput.masterId = masterAcc.Id;
-        mergeDuplicateInput.duplicateIds = new List<Id>{duplicateAccount1.Id, duplicateAccount2.Id};
+        mergeDuplicateInput.masterId = masterAccount.Id;
+        mergeDuplicateInput.duplicateIds = new List<Id>{firstDuplicateRecord.Id, secondDuplicateRecord.Id};
             
         Test.startTest();
         List<DF_MergeDuplicateRecords.MergeDuplicateOutput> mergeDuplicateOutput = DF_MergeDuplicateRecords.mergeDuplicates(new List<DF_MergeDuplicateRecords.MergeDuplicateInput>{mergeDuplicateInput});
         Test.stopTest();
         
-        Account updatedMaster = [SELECT Id, Phone, Website FROM Account WHERE Id = :masterAcc.Id];
+        Account updatedMaster = TestDataFactoryAccount.getAccountById(masterAccount.Id);
         
         System.assertEquals('9876543210', updatedMaster.Phone);
         System.assertEquals('www.test1.com', updatedMaster.Website);
-        System.assertEquals(masterAcc.Id, mergeDuplicateOutput[0].masterRecordId);
+        System.assertEquals(masterAccount.Id, mergeDuplicateOutput[0].masterRecordId);
         System.assertEquals('Master Record Updated Successfully', mergeDuplicateOutput[0].message);
     }
     
     @IsTest
-    static void mergeDuplicates_CreatesHistoryRecords_WhenMasterFieldsAreUpdated() {
-        
-        Account masterAccount = [SELECT Id FROM Account WHERE Name = 'Master Account' LIMIT 1];
-        List<Account> duplicateRecords = [SELECT Id FROM Account WHERE Name LIKE 'Duplicate%'];
+    static void mergeDuplicates_itCreatesHistoryRecords_whenMasterFieldsAreUpdated() {
+        List<Account> masterAccounts =  TestDataFactoryAccount.getAccountByName('Master Account');
+        List<Account> duplicateRecords = getAccountsByNameLike('Duplicate%');
         
         DF_MergeDuplicateRecords.MergeDuplicateInput mergeDuplicateInput = new DF_MergeDuplicateRecords.MergeDuplicateInput();
         mergeDuplicateInput.objectName = 'Account';
-        mergeDuplicateInput.masterId = masterAccount.Id;
+        mergeDuplicateInput.masterId = masterAccounts[0].Id;
         mergeDuplicateInput.duplicateIds = new List<Id>{duplicateRecords[0].Id, duplicateRecords[1].Id};
             
         Test.startTest();
         DF_MergeDuplicateRecords.mergeDuplicates(new List<DF_MergeDuplicateRecords.MergeDuplicateInput>{mergeDuplicateInput});
         Test.stopTest();
         
-        List<Custom_Field_History_Tracking__c> historyRecords = [SELECT Id, Field_Name__c, Master_Record_Id__c
-                                                                 FROM Custom_Field_History_Tracking__c
-                                                                 WHERE Master_Record_Id__c = :masterAccount.Id];
+        List<Custom_Field_History_Tracking__c> historyRecords = getCustomFieldHistoryRecordsByAccountId(masterAccounts[0].Id);
         
         System.assert(historyRecords.size() > 0);
     }
     
     @IsTest
-    static void mergeDuplicates_DeletesDuplicateRecords_WhenMergeCompletesSuccessfully() {
-        
-        Account masterAcc = [SELECT Id FROM Account WHERE Name = 'Master Account' LIMIT 1];
-        List<Account> duplicateRecords = [SELECT Id FROM Account WHERE Name LIKE 'Duplicate%'];
+    static void mergeDuplicates_itDeletesDuplicateRecords_whenMergeCompletesSuccessfully() {
+        List<Account> masterAccounts =  TestDataFactoryAccount.getAccountByName('Master Account');
+        List<Account> duplicateRecords = getAccountsByNameLike('Duplicate%'); 
         
         DF_MergeDuplicateRecords.MergeDuplicateInput mergeDuplicateInput = new DF_MergeDuplicateRecords.MergeDuplicateInput();
         mergeDuplicateInput.objectName = 'Account';
-        mergeDuplicateInput.masterId = masterAcc.Id;
+        mergeDuplicateInput.masterId = masterAccounts[0].Id;
         mergeDuplicateInput.duplicateIds = new List<Id>{duplicateRecords[0].Id, duplicateRecords[1].Id};
             
         Test.startTest();
         DF_MergeDuplicateRecords.mergeDuplicates(new List<DF_MergeDuplicateRecords.MergeDuplicateInput>{mergeDuplicateInput});
         Test.stopTest();
         
-        Integer duplicateRecordCount = [SELECT Count() FROM Account WHERE Id IN :new List<Id>{duplicateRecords[0].Id, duplicateRecords[1].Id}];
+        Integer duplicateRecordCount = getAccountCount(new List<Id>{duplicateRecords[0].Id, duplicateRecords[1].Id});
         
         System.assertEquals(0, duplicateRecordCount);
     }
     
     @IsTest
-    static void mergeDuplicates_IgnoresMasterId_WhenMasterIdExistsInDuplicateIds() {
-        
-        List<Account> accounts = [SELECT Id FROM Account ORDER BY CreatedDate ASC];
+    static void mergeDuplicates_itIgnoresMasterId_whenMasterIdExistsInDuplicateIds() {
+        List<Account> accounts = TestDataFactoryAccount.getAll();
         
         Account masterAccount = accounts[0];
         Account duplicateAccount = accounts[1];
@@ -99,25 +93,42 @@ private class DF_MergeDuplicateRecordsTest {
     }
     
     @IsTest
-    static void mergeDuplicates_DoesNotCreateHistoryRecords_WhenMasterAlreadyContainsValues() {
-        
-        Account masterAccount = new Account( Name = 'Filled Master', Phone = '1111111111', Website = 'www.master.com' );
-        Account duplicateAccount = new Account( Name = 'Filled Duplicate', Phone = '2222222222', Website = 'www.duplicate.com' );
-        INSERT new List<Account>{masterAccount, duplicateAccount};
+    static void mergeDuplicates_itDoesNotCreateHistoryRecords_whenMasterAlreadyContainsValues() {
+        List<Account> accounts = new List<Account>{
+            TestDataFactoryAccount.buildAccount('Filled Master','1111111111',null,'www.master.com'),
+            TestDataFactoryAccount.buildAccount('Filled Duplicate','2222222222',null,'www.duplicate.com')
+        };
+        INSERT accounts;
             
         DF_MergeDuplicateRecords.MergeDuplicateInput mergeDuplicateInput = new DF_MergeDuplicateRecords.MergeDuplicateInput();
         mergeDuplicateInput.objectName = 'Account';
-        mergeDuplicateInput.masterId = masterAccount.Id;
-        mergeDuplicateInput.duplicateIds = new List<Id>{duplicateAccount.Id};
+        mergeDuplicateInput.masterId = accounts[0].Id;
+        mergeDuplicateInput.duplicateIds = new List<Id>{accounts[1].Id};
             
         Test.startTest();
         DF_MergeDuplicateRecords.mergeDuplicates(new List<DF_MergeDuplicateRecords.MergeDuplicateInput>{mergeDuplicateInput});
         Test.stopTest();
         
-        List<Custom_Field_History_Tracking__c> lstCustomFieldHistoryRecord = [SELECT Id
-                                                                              FROM Custom_Field_History_Tracking__c
-                                                                              WHERE Master_Record_Id__c = :masterAccount.Id];
+        List<Custom_Field_History_Tracking__c> lstCustomFieldHistoryRecord = getCustomFieldHistoryRecordsByAccountId(accounts[0].Id);
         
         System.assertEquals(0, lstCustomFieldHistoryRecord.size());
+    }
+    
+    private static List<Account> getAccountsByNameLike(String namePattern) {
+        return [SELECT Id,Name,Phone,Website
+                FROM Account
+                WHERE Name LIKE :namePattern];
+    }
+    
+    private static List<Custom_Field_History_Tracking__c> getCustomFieldHistoryRecordsByAccountId(String masterAccountId) {
+        return [SELECT Id
+                FROM Custom_Field_History_Tracking__c
+                WHERE Master_Record_Id__c = : masterAccountId];
+    }
+    
+    private static Integer getAccountCount(List<Id> duplicateRecordIds) {
+        return [SELECT Count() 
+                FROM Account 
+                WHERE Id IN : duplicateRecordIds];
     }
 }

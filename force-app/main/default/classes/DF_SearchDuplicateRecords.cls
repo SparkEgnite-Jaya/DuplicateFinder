@@ -1,14 +1,9 @@
 public class DF_SearchDuplicateRecords {
     
     public class DuplicateSearchInput { 
-        @InvocableVariable(required=true) 
-        public String objectName; 
-        
-        @InvocableVariable(required=true) 
-        public String recordId; 
-        
-        @InvocableVariable(required=true) 
-        public List<String> fieldNames; 
+        @InvocableVariable(required=true) public String objectName; 
+        @InvocableVariable(required=true) public String recordId; 
+        @InvocableVariable(required=true) public List<String> fieldNames; 
     }
     
     public class DuplicateSearchOutput {
@@ -35,7 +30,6 @@ public class DF_SearchDuplicateRecords {
     @InvocableMethod(label='Find Duplicate Records'
                      description='Find duplicate records using configured fields')
     public static List<DuplicateSearchOutput> findDuplicates(List<DuplicateSearchInput> lstDuplicateSearchInput) {
-        
         List<DuplicateSearchOutput> lstDuplicateSearchOutput = new List<DuplicateSearchOutput>();
         
         for (DuplicateSearchInput duplicateSearchInput : lstDuplicateSearchInput) {
@@ -46,7 +40,6 @@ public class DF_SearchDuplicateRecords {
     }
     
     private static DuplicateSearchOutput processRequest(DuplicateSearchInput duplicateSearchInput) {
-        
         try {
             SObject sourceRecord = getSourceRecord(duplicateSearchInput);
             String whereClause = buildDuplicateCriteria(sourceRecord,duplicateSearchInput.fieldNames);
@@ -64,7 +57,6 @@ public class DF_SearchDuplicateRecords {
     }    
     
     private static SObject getSourceRecord(DuplicateSearchInput input) {
-        
         Set<String> fields = new Set<String>(input.fieldNames);
         fields.add('Id');
         
@@ -74,26 +66,18 @@ public class DF_SearchDuplicateRecords {
                         input.objectName +
                         ' WHERE Id = ' + '\'' +input.recordId + '\'';
         
-        System.debug('query :: ' + query);
-        
         return Database.query(query);
     }
     
     private static String buildDuplicateCriteria(SObject sourceRecord,List<String> fieldNames) {
         List<String> conditions = new List<String>();
         
-        System.debug('fieldNames :: ' + fieldNames);
-        
         for (String fieldName : fieldNames) {
-            System.debug('fieldName :: ' + fieldName);
             String condition = buildFieldCondition(sourceRecord, fieldName);
-            System.debug('condition :: ' + condition);
             if (condition != null) {
                 conditions.add(condition);
             }
         }
-        
-        System.debug('String.join(conditions :: ' + String.join(conditions, ' AND '));
         
         return String.join(conditions, ' AND ');
     }
@@ -109,13 +93,10 @@ public class DF_SearchDuplicateRecords {
             return fieldName + ' = \'' + String.escapeSingleQuotes( String.valueOf(sourceFieldvalue) ) + '\'';
         }
         
-       System.debug('buildFieldCondition :: ' + fieldName + ' = ' + String.valueOf(sourceFieldvalue));
-
-       return fieldName + ' = ' + String.valueOf(sourceFieldvalue);
+        return fieldName + ' = ' + String.valueOf(sourceFieldvalue);
     }
  
     private static List<SObject> findMatchingRecords(String objectName,Id recordId,List<String> fieldNames,String whereClause) {
-        
         List<String> queryFields = new List<String>{'Id'};
         queryFields.addAll(fieldNames);
         
@@ -126,8 +107,6 @@ public class DF_SearchDuplicateRecords {
                         ' WHERE ' + whereClause + 
             			' ORDER BY CreatedDate DESC' +
             			' LIMIT ' + recordLimit;
-        
-        System.debug('findMatchingRecords :: ' + query);
         
         return Database.query(query);
     }
@@ -156,8 +135,6 @@ public class DF_SearchDuplicateRecords {
         duplicateSearchOutput.success = false;
         duplicateSearchOutput.message = message;
         
-        System.debug('buildErrorOutput :: ' + duplicateSearchOutput);
-        
         return duplicateSearchOutput;
     }
 
@@ -180,7 +157,6 @@ public class DF_SearchDuplicateRecords {
                 
                 recordInfo.matchedFields.add(matchedField);
             }
-            
             duplicateRecordsInfo.lstDuplicateRecordInfo.add(recordInfo);
         }
         
@@ -188,13 +164,12 @@ public class DF_SearchDuplicateRecords {
     }
     
     private static Integer getRecordLimit(){
-
         Integer limitValue = 5;
 
-        Duplicate_Finder_Setting__c settingRec = Duplicate_Finder_Setting__c.getOrgDefaults();
+        Duplicate_Finder_Setting__c duplicateFinderCustomSettingRecord = Duplicate_Finder_Setting__c.getOrgDefaults();
 
-        if(settingRec != null && settingRec.Record_Limit__c != null){
-            limitValue = Integer.valueOf(settingRec.Record_Limit__c);
+        if(duplicateFinderCustomSettingRecord != null && duplicateFinderCustomSettingRecord.Record_Limit__c != null){
+            limitValue = Integer.valueOf(duplicateFinderCustomSettingRecord.Record_Limit__c);
         }
 
         if(limitValue < 1){
@@ -207,5 +182,4 @@ public class DF_SearchDuplicateRecords {
 
         return limitValue;
     }
-
 }

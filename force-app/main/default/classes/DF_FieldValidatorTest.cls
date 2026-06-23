@@ -1,27 +1,25 @@
 @IsTest
 private class DF_FieldValidatorTest {
-
+    
     @IsTest
-    static void validateFields_ReturnsSuccess_WhenAllConfiguredFieldsAreSupported() {
-
+    static void validateFields_itReturnsSuccess_whenAllConfiguredFieldsAreSupported() {
         DF_FieldValidator.testDataFields = new List<String>{'Name','Phone'};
-
+            
         DF_FieldValidator.FieldValidatorInputWrapper fieldValidatorInputWrapper = new DF_FieldValidator.FieldValidatorInputWrapper();
         fieldValidatorInputWrapper.entityType = 'Account';
-
+        
         Test.startTest();
         List<DF_FieldValidator.FieldValidatorOutputWrapper> fieldValidatorOutputWrapper = DF_FieldValidator.validateFields(new List<DF_FieldValidator.FieldValidatorInputWrapper>{ fieldValidatorInputWrapper});
         Test.stopTest();
-
-        System.assertEquals(1, fieldValidatorOutputWrapper.size());
-        System.assertEquals(true, fieldValidatorOutputWrapper[0].success);
-        System.assertEquals(2, fieldValidatorOutputWrapper[0].supportedFields.size());
-        System.assertEquals(0, fieldValidatorOutputWrapper[0].unsupportedFields.size());
+        
+        Assert.areEqual(1, fieldValidatorOutputWrapper.size());
+        Assert.isTrue(fieldValidatorOutputWrapper[0].success);
+        Assert.areEqual(2, fieldValidatorOutputWrapper[0].supportedFields.size());
+        Assert.areEqual(0, fieldValidatorOutputWrapper[0].unsupportedFields.size());
     }
 
     @IsTest
-    static void validateFields_ReturnsSupportedAndUnsupportedFields_WhenInvalidFieldExists() {
-
+    static void validateFields_itReturnsSupportedAndUnsupportedFields_whenInvalidFieldExists() {
         DF_FieldValidator.testDataFields = new List<String>{'Name','Invalid_Field__c'};
 
         DF_FieldValidator.FieldValidatorInputWrapper fieldValidatorInputWrapper = new DF_FieldValidator.FieldValidatorInputWrapper();
@@ -30,16 +28,15 @@ private class DF_FieldValidatorTest {
         Test.startTest();
         List<DF_FieldValidator.FieldValidatorOutputWrapper> fieldValidatorOutputWrapper = DF_FieldValidator.validateFields(new List<DF_FieldValidator.FieldValidatorInputWrapper>{fieldValidatorInputWrapper});
 		Test.stopTest();
-
-        System.assertEquals(false, fieldValidatorOutputWrapper[0].success);
-        System.assertEquals(1, fieldValidatorOutputWrapper[0].supportedFields.size());
-        System.assertEquals(1, fieldValidatorOutputWrapper[0].unsupportedFields.size());
-        System.assert(fieldValidatorOutputWrapper[0].unsupportedFields.contains('Invalid_Field__c'));
+        
+        Assert.isFalse(fieldValidatorOutputWrapper[0].success);
+        Assert.areEqual(1, fieldValidatorOutputWrapper[0].supportedFields.size());
+        Assert.areEqual(1, fieldValidatorOutputWrapper[0].unsupportedFields.size());
+        Assert.isTrue(fieldValidatorOutputWrapper[0].unsupportedFields.contains('Invalid_Field__c'));
     }
 
     @IsTest
-    static void validateFields_ReturnsFailure_WhenNoConfiguredFieldsExist() {
-
+    static void validateFields_itReturnsFailure_whenNoConfiguredFieldsExist() {
         DF_FieldValidator.testDataFields = new List<String>();
 
         DF_FieldValidator.FieldValidatorInputWrapper fieldValidatorInputWrapper = new DF_FieldValidator.FieldValidatorInputWrapper();
@@ -48,14 +45,13 @@ private class DF_FieldValidatorTest {
         Test.startTest();
         List<DF_FieldValidator.FieldValidatorOutputWrapper> fieldValidatorOutputWrapper = DF_FieldValidator.validateFields(new List<DF_FieldValidator.FieldValidatorInputWrapper>{fieldValidatorInputWrapper});
         Test.stopTest();
-
-        System.assertEquals(false, fieldValidatorOutputWrapper[0].success);
-        System.assert(fieldValidatorOutputWrapper[0].message.contains('No duplicate field configuration found'));
+        
+        Assert.isFalse(fieldValidatorOutputWrapper[0].success);
+        Assert.isTrue(fieldValidatorOutputWrapper[0].message.contains('No duplicate field configuration found'));
     }
 
     @IsTest
-    static void validateFields_ReturnsFailure_WhenInvalidObjectProvided() {
-
+    static void validateFields_itReturnsFailure_whenInvalidObjectProvided() {
         DF_FieldValidator.testDataFields = new List<String>{'Name'};
 
         DF_FieldValidator.fieldValidatorInputWrapper fieldValidatorInputWrapper = new DF_FieldValidator.fieldValidatorInputWrapper();
@@ -65,6 +61,6 @@ private class DF_FieldValidatorTest {
         List<DF_FieldValidator.FieldValidatorOutputWrapper> fieldValidatorOutputWrapper = DF_FieldValidator.validateFields(new List<DF_FieldValidator.fieldValidatorInputWrapper>{fieldValidatorInputWrapper});
         Test.stopTest();
 
-        System.assertEquals(false, fieldValidatorOutputWrapper[0].success);
+        Assert.isFalse(fieldValidatorOutputWrapper[0].success);
     }
 }

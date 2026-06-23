@@ -2,78 +2,73 @@
 public class DF_SearchDuplicateRecordsTest {
     
     @TestSetup
-    static void createTestData() {
-        
+    static void createTestData() {        
         INSERT new List<Account>{
-               new Account(Name = 'Duplicate Account', Phone = '1111111111', Active__c = 'true'),
-               new Account(Name = 'Duplicate Account', Phone = '1111111111', Active__c = 'true'),
-               new Account(Name = 'Unique Account', Phone = '2222222222', Active__c = 'false'),
-               new Account(Name = 'Null Active Account', Phone = '3333333333'),
-               new Account(Name = 'Null Active Account', Phone = '3333333333')
+            TestDataFactoryAccount.buildAccount('Duplicate Account','1111111111','true'),
+            TestDataFactoryAccount.buildAccount('Duplicate Account','1111111111','true'),
+            TestDataFactoryAccount.buildAccount('Unique Account','2222222222','false'),
+            TestDataFactoryAccount.buildAccount('Null Active Account','3333333333',null),
+            TestDataFactoryAccount.buildAccount('Null Active Account','3333333333',null)   
         };
    }
     
     @IsTest
-    static void findDuplicates_ReturnsDuplicateRecords_WhenMatchingRecordsExist() {
-        
-        Account sourceRecord = [SELECT Id FROM Account WHERE Name = 'Duplicate Account' LIMIT 1];
+    static void findDuplicates_itReturnsDuplicateRecords_whenMatchingRecordsExist() {
+        List<Account> sourceRecords = TestDataFactoryAccount.getAccountByName('Duplicate Account');
         
         DF_SearchDuplicateRecords.DuplicateSearchInput duplicateSearchInput = new DF_SearchDuplicateRecords.DuplicateSearchInput();
         duplicateSearchInput.objectName = 'Account';
-        duplicateSearchInput.recordId = sourceRecord.Id;
+        duplicateSearchInput.recordId = sourceRecords[0].Id;
         duplicateSearchInput.fieldNames = new List<String>{'Name','Phone'};
             
         Test.startTest();
         List<DF_SearchDuplicateRecords.DuplicateSearchOutput> duplicateSearchOutput = DF_SearchDuplicateRecords.findDuplicates(new List<DF_SearchDuplicateRecords.DuplicateSearchInput>{duplicateSearchInput});
         Test.stopTest();
         
-        System.assertEquals(true, duplicateSearchOutput[0].success);
-        System.assert(duplicateSearchOutput[0].duplicateCount > 1);
-        System.assertNotEquals(null, duplicateSearchOutput[0].duplicateRecords);
-        System.assertEquals(duplicateSearchOutput[0].duplicateCount, duplicateSearchOutput[0].duplicateRecords.lstDuplicateRecordInfo.size());
+        Assert.isTrue(duplicateSearchOutput[0].success);
+        Assert.isTrue(duplicateSearchOutput[0].duplicateCount > 1);
+        Assert.isNotNull(duplicateSearchOutput[0].duplicateRecords);
+        Assert.areEqual(duplicateSearchOutput[0].duplicateCount, duplicateSearchOutput[0].duplicateRecords.lstDuplicateRecordInfo.size());
     }
     
     @IsTest
-    static void findDuplicates_ReturnsNoDuplicateMessage_WhenOnlyOneRecordMatches() {
-        
-        Account sourceRecord = [SELECT Id FROM Account WHERE Name = 'Unique Account' LIMIT 1];
+    static void findDuplicates_itReturnsNoDuplicateMessage_whenOnlyOneRecordMatches() {
+        List<Account> sourceRecords = TestDataFactoryAccount.getAccountByName('Unique Account');
         
         DF_SearchDuplicateRecords.DuplicateSearchInput duplicateSearchInput = new DF_SearchDuplicateRecords.DuplicateSearchInput();
         duplicateSearchInput.objectName = 'Account';
-        duplicateSearchInput.recordId = sourceRecord.Id;
+        duplicateSearchInput.recordId = sourceRecords[0].Id;
         duplicateSearchInput.fieldNames = new List<String>{'Name','Phone'};
             
         Test.startTest();
         List<DF_SearchDuplicateRecords.DuplicateSearchOutput> duplicateSearchOutput = DF_SearchDuplicateRecords.findDuplicates(new List<DF_SearchDuplicateRecords.DuplicateSearchInput>{duplicateSearchInput});
         Test.stopTest();
         
-        System.assertEquals(true, duplicateSearchOutput[0].success);
-        System.assertEquals('No duplicate records found.', duplicateSearchOutput[0].message);
-        System.assertEquals(null, duplicateSearchOutput[0].duplicateRecords);
-        System.assertEquals(1, duplicateSearchOutput[0].duplicateCount);
+        Assert.isTrue(duplicateSearchOutput[0].success);
+        Assert.areEqual('No duplicate records found.', duplicateSearchOutput[0].message);
+        Assert.isNull(duplicateSearchOutput[0].duplicateRecords);
+        Assert.areEqual(1, duplicateSearchOutput[0].duplicateCount);
     }
     
     @IsTest
-    static void findDuplicates_ReturnsDuplicateRecords_WhenMatchingNullFieldValuesExist() {
-        
-        Account sourceRecord = [SELECT Id FROM Account WHERE Name = 'Null Active Account' LIMIT 1];
-        
+    static void findDuplicates_itReturnsDuplicateRecords_whenMatchingNullFieldValuesExist() {
+        List<Account> sourceRecords = TestDataFactoryAccount.getAccountByName('Null Active Account');
+
         DF_SearchDuplicateRecords.DuplicateSearchInput duplicateSearchInput = new DF_SearchDuplicateRecords.DuplicateSearchInput();
         duplicateSearchInput.objectName = 'Account';
-        duplicateSearchInput.recordId = sourceRecord.Id;
+        duplicateSearchInput.recordId = sourceRecords[0].Id;
         duplicateSearchInput.fieldNames = new List<String>{'Active__c'};
             
         Test.startTest();
         List<DF_SearchDuplicateRecords.DuplicateSearchOutput> duplicateSearchOutput = DF_SearchDuplicateRecords.findDuplicates(new List<DF_SearchDuplicateRecords.DuplicateSearchInput>{duplicateSearchInput});
         Test.stopTest();
         
-        System.assertEquals(true, duplicateSearchOutput[0].success);
-        System.assert(duplicateSearchOutput[0].duplicateCount > 1);
+        Assert.isTrue(duplicateSearchOutput[0].success);
+        Assert.isTrue(duplicateSearchOutput[0].duplicateCount > 1);
     }
     
     @IsTest
-    static void findDuplicates_ReturnsFailure_WhenInvalidObjectProvided() {
-        
+    static void findDuplicates_itReturnsFailure_whenInvalidObjectProvided() {
         DF_SearchDuplicateRecords.DuplicateSearchInput duplicateSearchInput = new DF_SearchDuplicateRecords.DuplicateSearchInput();
         duplicateSearchInput.objectName = 'InvalidObject';
         duplicateSearchInput.recordId = '001000000000000AAA';
@@ -83,43 +78,39 @@ public class DF_SearchDuplicateRecordsTest {
         List<DF_SearchDuplicateRecords.DuplicateSearchOutput> duplicateSearchOutput = DF_SearchDuplicateRecords.findDuplicates(new List<DF_SearchDuplicateRecords.DuplicateSearchInput>{duplicateSearchInput});
         Test.stopTest();
         
-        System.assertEquals(false, duplicateSearchOutput[0].success);
-        System.assertNotEquals(null, duplicateSearchOutput[0].message);
+        Assert.isFalse(duplicateSearchOutput[0].success);
+        Assert.isNotNull(duplicateSearchOutput[0].message);
     }
     
     @IsTest
-    static void findDuplicates_ReturnsResults_WhenMultipleInputsProvided() {
+    static void findDuplicates_itReturnsResults_whenMultipleInputsProvided() {
+        List<Account> sourceRecords = TestDataFactoryAccount.getAccountByName('Duplicate Account');
         
-        List<Account> accounts = [SELECT Id FROM Account WHERE Name = 'Duplicate Account' LIMIT 2];
-        
-        DF_SearchDuplicateRecords.DuplicateSearchInput duplicateSearchInput1 = new DF_SearchDuplicateRecords.DuplicateSearchInput();
-        duplicateSearchInput1.objectName = 'Account';
-        duplicateSearchInput1.recordId = accounts[0].Id;
-        duplicateSearchInput1.fieldNames = new List<String>{'Name'};
+        DF_SearchDuplicateRecords.DuplicateSearchInput firstDuplicateSearchInput  = new DF_SearchDuplicateRecords.DuplicateSearchInput();
+        firstDuplicateSearchInput.objectName = 'Account';
+        firstDuplicateSearchInput.recordId = sourceRecords[0].Id;
+        firstDuplicateSearchInput.fieldNames = new List<String>{'Name'};
             
-        DF_SearchDuplicateRecords.DuplicateSearchInput duplicateSearchInput2 = new DF_SearchDuplicateRecords.DuplicateSearchInput();
-        duplicateSearchInput2.objectName = 'Account';
-        duplicateSearchInput2.recordId = accounts[1].Id;
-        duplicateSearchInput2.fieldNames = new List<String>{'Name'};
+        DF_SearchDuplicateRecords.DuplicateSearchInput secondDuplicateSearchInput = new DF_SearchDuplicateRecords.DuplicateSearchInput();
+        secondDuplicateSearchInput.objectName = 'Account';
+        secondDuplicateSearchInput.recordId = sourceRecords[1].Id;
+        secondDuplicateSearchInput.fieldNames = new List<String>{'Name'};
             
         Test.startTest();
-        List<DF_SearchDuplicateRecords.DuplicateSearchOutput> duplicateSearchOutput = DF_SearchDuplicateRecords.findDuplicates(new List<DF_SearchDuplicateRecords.DuplicateSearchInput>{duplicateSearchInput1,duplicateSearchInput2});
+        List<DF_SearchDuplicateRecords.DuplicateSearchOutput> duplicateSearchOutput = DF_SearchDuplicateRecords.findDuplicates(new List<DF_SearchDuplicateRecords.DuplicateSearchInput>{firstDuplicateSearchInput,secondDuplicateSearchInput});
         Test.stopTest();
         
-        System.assertEquals(2, duplicateSearchOutput.size());
-        System.assertEquals(true, duplicateSearchOutput[0].success);
-        System.assertEquals(true, duplicateSearchOutput[1].success);
+        Assert.areEqual(2, duplicateSearchOutput.size());
+        Assert.isTrue(duplicateSearchOutput[0].success);
+        Assert.isTrue(duplicateSearchOutput[1].success);
     }
     
     @IsTest
-    static void findDuplicates_RespectsRecordLimit_WhenMoreThanFiveRecordsExist() {
-        
+    static void findDuplicates_itRespectsRecordLimit_whenMoreThanFiveRecordsExist() {
         List<Account> accountsToInsert = new List<Account>();
-        
         for(Integer i = 0; i < 10; i++) {
-            accountsToInsert.add(new Account(Name = 'Limit Test', Phone = '9999999999'));
+           accountsToInsert.add(TestDataFactoryAccount.buildAccount('Limit Test','9999999999',null));
         }
-        
         insert accountsToInsert;
         
         Account sourceRecord = [SELECT Id FROM Account WHERE Name = 'Limit Test' LIMIT 1];
@@ -133,6 +124,6 @@ public class DF_SearchDuplicateRecordsTest {
         List<DF_SearchDuplicateRecords.DuplicateSearchOutput> duplicateSearchOutput = DF_SearchDuplicateRecords.findDuplicates(new List<DF_SearchDuplicateRecords.DuplicateSearchInput>{duplicateSearchInput});
         Test.stopTest();
         
-        System.assert(duplicateSearchOutput[0].duplicateCount <= 5);
+        Assert.isTrue(duplicateSearchOutput[0].duplicateCount <= 5);
     }
 }
