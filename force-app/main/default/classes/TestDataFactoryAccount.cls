@@ -40,19 +40,29 @@ public with sharing class TestDataFactoryAccount {
     public static List<Account> getAll() {
         return [SELECT Id,Name,Active__c,Phone,Website
             	FROM Account
-                ORDER BY CreatedDate ASC];
+                ORDER BY CreatedDate DESC];
     }
     
     public static List<Account> getAccountByName(String accountName){
-        return [SELECT Id,Name,Active__c,Phone,Website
-                FROM Account
-                WHERE Name =: accountName];
+        List<Account> accounts = new List<Account>();
+        
+        for(Account account: getAll()) {
+            if(account.Name == accountName) {
+                accounts.add(account);
+            }
+        }
+        
+        return accounts;
     }
     
     public static Account getAccountById(String accountId){
-        return [SELECT Id,Name,Active__c,Phone,Website
-                FROM Account
-                WHERE Id =: accountId];
+        for(Account account: getAll()) {
+            if (account.Id == accountId) {
+                return account;
+            }
+        }
+        
+        return null;
     }
     
 }
