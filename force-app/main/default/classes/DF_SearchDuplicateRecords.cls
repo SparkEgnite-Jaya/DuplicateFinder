@@ -29,14 +29,14 @@ public class DF_SearchDuplicateRecords {
     
     @InvocableMethod(label='Find Duplicate Records'
                      description='Find duplicate records using configured fields')
-    public static List<DuplicateSearchOutput> findDuplicates(List<DuplicateSearchInput> lstDuplicateSearchInput) {
-        List<DuplicateSearchOutput> lstDuplicateSearchOutput = new List<DuplicateSearchOutput>();
+    public static List<DuplicateSearchOutput> findDuplicates(List<DuplicateSearchInput> duplicateSearchInputs) {
+        List<DuplicateSearchOutput> duplicateSearchOutputs = new List<DuplicateSearchOutput>();
         
-        for (DuplicateSearchInput duplicateSearchInput : lstDuplicateSearchInput) {
-            lstDuplicateSearchOutput.add(processRequest(duplicateSearchInput));
+        for (DuplicateSearchInput duplicateSearchInput : duplicateSearchInputs) {
+            duplicateSearchOutputs.add(processRequest(duplicateSearchInput));
         }
         
-        return lstDuplicateSearchOutput;
+        return duplicateSearchOutputs;
     }
     
     private static DuplicateSearchOutput processRequest(DuplicateSearchInput duplicateSearchInput) {
@@ -48,9 +48,9 @@ public class DF_SearchDuplicateRecords {
                 return buildErrorOutput('No field values available for duplicate search.');
             }
             
-            List<SObject> lstDuplicateRecords = findMatchingRecords(duplicateSearchInput.objectName,duplicateSearchInput.recordId,duplicateSearchInput.fieldNames,whereClause);
+            List<SObject> duplicateRecords = findMatchingRecords(duplicateSearchInput.objectName,duplicateSearchInput.recordId,duplicateSearchInput.fieldNames,whereClause);
             
-            return buildSuccessOutput(lstDuplicateRecords,duplicateSearchInput.fieldNames);
+            return buildSuccessOutput(duplicateRecords,duplicateSearchInput.fieldNames);
         } catch (Exception e) {
             return buildErrorOutput(e.getMessage());
         }
@@ -111,15 +111,15 @@ public class DF_SearchDuplicateRecords {
         return Database.query(query);
     }
  
-    private static DuplicateSearchOutput buildSuccessOutput(List<SObject> lstDuplicateRecords,List<String> fieldNames){
+    private static DuplicateSearchOutput buildSuccessOutput(List<SObject> duplicateRecords,List<String> fieldNames){
         DuplicateSearchOutput duplicateSearchOutput = new DuplicateSearchOutput();
         
         duplicateSearchOutput.success = true;
-        duplicateSearchOutput.duplicateCount = lstDuplicateRecords.size();
+        duplicateSearchOutput.duplicateCount = duplicateRecords.size();
         
-        if(lstDuplicateRecords.size() > 1){
-            duplicateSearchOutput.duplicateRecords = convertToWrapper(lstDuplicateRecords,fieldNames);
-            duplicateSearchOutput.message = lstDuplicateRecords.size() +' duplicate record(s) found.';
+        if(duplicateRecords.size() > 1){
+            duplicateSearchOutput.duplicateRecords = convertToWrapper(duplicateRecords,fieldNames);
+            duplicateSearchOutput.message = duplicateRecords.size() +' duplicate record(s) found.';
         }
         else{
             duplicateSearchOutput.duplicateRecords = null;

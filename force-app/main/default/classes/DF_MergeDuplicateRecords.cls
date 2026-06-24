@@ -13,43 +13,44 @@ public class DF_MergeDuplicateRecords {
     
     @InvocableMethod( label='Merge Duplicates Using Field Values.' 
                      description='Merge duplicate records' ) 
-    public static List<MergeDuplicateOutput> mergeDuplicates(List<MergeDuplicateInput> lstMergeDuplicateInput) {
-        MergeDuplicateInput mergeDuplicateInput = lstMergeDuplicateInput[0];
-        Set<Id> duplicateRecordIds = getDuplicateIds(mergeDuplicateInput.masterId,mergeDuplicateInput.duplicateIds);
+    public static List<MergeDuplicateOutput> mergeDuplicates(List<MergeDuplicateInput> MergeDuplicateInputs) {
+        MergeDuplicateInput mergeDuplicateInput = MergeDuplicateInputs[0];
+        Set<Id> duplicateRecordIds = getDuplicateIds(mergeDuplicateInput.masterId, mergeDuplicateInput.duplicateIds);
         
         Map<String, Schema.SObjectField> fieldMap = getFieldMap(mergeDuplicateInput.objectName);
         List<String> mergeableFields = getMergeableFields(fieldMap);
         
-        SObject masterRecord = getMasterRecord(mergeDuplicateInput.objectName,mergeDuplicateInput.masterId,mergeableFields);
+        SObject masterRecord = getMasterRecord(mergeDuplicateInput.objectName, mergeDuplicateInput.masterId, mergeableFields);
         List<String> emptyFieldsOfMasterRecord = getEmptyFields(masterRecord, mergeableFields);
 
-        List<SObject> duplicateRecords = getDuplicateRecords(mergeDuplicateInput.objectName,duplicateRecordIds,emptyFieldsOfMasterRecord);
+        List<SObject> duplicateRecords = getDuplicateRecords(mergeDuplicateInput.objectName, duplicateRecordIds, emptyFieldsOfMasterRecord);
 
-        List<Custom_Field_History_Tracking__c> historyRecords = populateMasterRecord(masterRecord,duplicateRecords,emptyFieldsOfMasterRecord,mergeDuplicateInput.objectName,mergeDuplicateInput.masterId);
+        List<Custom_Field_History_Tracking__c> historyRecords = populateMasterRecord(masterRecord, duplicateRecords, emptyFieldsOfMasterRecord, mergeDuplicateInput.objectName, mergeDuplicateInput.masterId);
 
-        saveChanges(masterRecord,duplicateRecords,historyRecords);
+        saveChanges(masterRecord, duplicateRecords, historyRecords);
         
         return buildResponse(masterRecord.Id);
        
     }
     
-    private static Set<Id> getDuplicateIds( Id masterId, List<Id> duplicateRecordIds ) { 
+    private static Set<Id> getDuplicateIds(Id masterId, List<Id> duplicateRecordIds) { 
         Set<Id> setDuplicateRecordIds = new Set<Id>(duplicateRecordIds); 
         setDuplicateRecordIds.remove(masterId); 
         return setDuplicateRecordIds; 
     } 
     
-    private static Map<String, Schema.SObjectField> getFieldMap( String objectName ) { 
+    private static Map<String, Schema.SObjectField> getFieldMap(String objectName) { 
         return Schema.getGlobalDescribe() .get(objectName) .getDescribe() .fields .getMap(); 
     }
     
-    private static SObject getMasterRecord( String objectName, Id masterId, List<String> fields ) { 
+    private static SObject getMasterRecord(String objectName, Id masterId, List<String> fields ) { 
         fields.add('Id');
         String query = 'SELECT ' + String.join(fields, ',') + ' FROM ' + objectName + ' WHERE Id = :masterId'; 
+        
         return Database.query(query); 
     }
     
-    private static List<String> getEmptyFields( SObject master,List<String> mergeableFields ) { 
+    private static List<String> getEmptyFields(SObject master, List<String> mergeableFields ) { 
         List<String> emptyFields = new List<String>(); 
         
         for(String fieldName : mergeableFields){
@@ -63,7 +64,7 @@ public class DF_MergeDuplicateRecords {
         return emptyFields; 
     }
     
-    private static List<SObject> getDuplicateRecords(String objectName,Set<Id> duplicateRecordIds,List<String> fields) {
+    private static List<SObject> getDuplicateRecords(String objectName, Set<Id> duplicateRecordIds, List<String> fields) {
         if(duplicateRecordIds.isEmpty()) {
             return new List<SObject>();
         }
@@ -103,27 +104,34 @@ public class DF_MergeDuplicateRecords {
         return mergeableFields;
     }
     
-    private static List<Custom_Field_History_Tracking__c> populateMasterRecord(SObject master,List<SObject> duplicateRecords,List<String> emptyFields,String objectName,String recordId) {
-        List<Custom_Field_History_Tracking__c> historyRecords = new List<Custom_Field_History_Tracking__c>();
+    private static List<Custom_Field_History_Tracking__c> populateMasterRecord(SObject master, List<SObject> duplicateRecords, List<String> emptyFields, String objectName, String recordId) {
+        List<Custom_Field_History_Tracking__c> customFieldHistoryRecords = new List<Custom_Field_History_Tracking__c>();
         
-        for (String fieldName : emptyFields) {
-            for (SObject duplicateRecord : duplicateRecords) {
+        Set<String> fieldsToProcess = new Set<String>(emptyFields);
+        
+        for (SObject duplicateRecord : duplicateRecords) {
+            if (fieldsToProcess.isEmpty()) {
+                break; 
+            }
+            
+            // Create a copy of the keys to avoid ConcurrentModificationException while removing elements
+            List<String> currentFieldsToCheck = new List<String>(fieldsToProcess);
+            
+            for (String fieldName : currentFieldsToCheck) {
                 Object fieldValue = duplicateRecord.get(fieldName);
                 
-                if (fieldValue == null) {
-                    continue;
+                if (fieldValue != null) {
+                    master.put(fieldName, fieldValue);
+                    customFieldHistoryRecords.add(createHistoryRecord(objectName, fieldName, null, fieldValue, recordId));
+                    fieldsToProcess.remove(fieldName);
                 }
-                
-                master.put(fieldName, fieldValue);
-                historyRecords.add(createHistoryRecord(objectName, fieldName, null, fieldValue, recordId));
-                break;
             }
         }
         
-        return historyRecords;
+        return customFieldHistoryRecords;
     }
     
-    private static Custom_Field_History_Tracking__c createHistoryRecord(String objectName,String fieldName,Object oldValue,Object newValue,String masterRecordId) {
+    private static Custom_Field_History_Tracking__c createHistoryRecord(String objectName, String fieldName, Object oldValue, Object newValue, String masterRecordId) {
         Custom_Field_History_Tracking__c customFieldHistoryRecord = new Custom_Field_History_Tracking__c();
         
         customFieldHistoryRecord.Name = objectName;
@@ -136,11 +144,11 @@ public class DF_MergeDuplicateRecords {
         return customFieldHistoryRecord;
     }
     
-    private static void saveChanges(SObject masterRecord,List<SObject> duplicateRecords,List<Custom_Field_History_Tracking__c> lstCustomFieldHistoryRecords) {
+    private static void saveChanges(SObject masterRecord, List<SObject> duplicateRecords, List<Custom_Field_History_Tracking__c> customFieldHistoryRecords) {
         UPDATE masterRecord;
         
-        if(!lstCustomFieldHistoryRecords.isEmpty()) {
-            INSERT lstCustomFieldHistoryRecords;
+        if(!customFieldHistoryRecords.isEmpty()) {
+            INSERT customFieldHistoryRecords;
         }
         
         if(!duplicateRecords.isEmpty()) {

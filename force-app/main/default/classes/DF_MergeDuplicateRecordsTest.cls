@@ -4,9 +4,9 @@ private class DF_MergeDuplicateRecordsTest {
     @TestSetup
     static void createTestData() {
         INSERT new List<Account>{
-            TestDataFactoryAccount.buildAccount('Master Account',null,null),
-            TestDataFactoryAccount.buildAccount('Duplicate 1','9876543210',null,'www.test1.com'),
-            TestDataFactoryAccount.buildAccount('Duplicate 2','9999999999',null,'www.test2.com') 
+            TestDataFactoryAccount.buildAccount('Master Account', null, null),
+            TestDataFactoryAccount.buildAccount('Duplicate 1', '9876543210', null, 'www.test1.com'),
+            TestDataFactoryAccount.buildAccount('Duplicate 2', '9999999999', null, 'www.test2.com') 
         };
     }
     
@@ -29,10 +29,11 @@ private class DF_MergeDuplicateRecordsTest {
         
         Account updatedMaster = TestDataFactoryAccount.getAccountById(masterAccount.Id);
         
-        System.assertEquals('9876543210', updatedMaster.Phone);
-        System.assertEquals('www.test1.com', updatedMaster.Website);
-        System.assertEquals(masterAccount.Id, mergeDuplicateOutput[0].masterRecordId);
-        System.assertEquals('Master Record Updated Successfully', mergeDuplicateOutput[0].message);
+        Assert.areEqual('9876543210', updatedMaster.Phone);
+        Assert.areEqual('www.test1.com', updatedMaster.Website);
+        Assert.isFalse(mergeDuplicateOutput.isEmpty());
+        Assert.areEqual(masterAccount.Id, mergeDuplicateOutput[0].masterRecordId);
+        Assert.areEqual('Master Record Updated Successfully', mergeDuplicateOutput[0].message);
     }
     
     @IsTest
@@ -51,7 +52,7 @@ private class DF_MergeDuplicateRecordsTest {
         
         List<Custom_Field_History_Tracking__c> historyRecords = getCustomFieldHistoryRecordsByAccountId(masterAccounts[0].Id);
         
-        System.assert(historyRecords.size() > 0);
+        Assert.isTrue(historyRecords.size() > 0);    
     }
     
     @IsTest
@@ -70,7 +71,7 @@ private class DF_MergeDuplicateRecordsTest {
         
         Integer duplicateRecordCount = getAccountCount(new List<Id>{duplicateRecords[0].Id, duplicateRecords[1].Id});
         
-        System.assertEquals(0, duplicateRecordCount);
+        Assert.areEqual(0, duplicateRecordCount);
     }
     
     @IsTest
@@ -89,14 +90,15 @@ private class DF_MergeDuplicateRecordsTest {
         List<DF_MergeDuplicateRecords.MergeDuplicateOutput> mergeDuplicateOutput = DF_MergeDuplicateRecords.mergeDuplicates(new List<DF_MergeDuplicateRecords.MergeDuplicateInput>{mergeDuplicateInput});
         Test.stopTest();
         
-        System.assertEquals(masterAccount.Id, mergeDuplicateOutput[0].masterRecordId);
+        Assert.isFalse(mergeDuplicateOutput.isEmpty());
+        Assert.areEqual(masterAccount.Id, mergeDuplicateOutput[0].masterRecordId);
     }
     
     @IsTest
     static void mergeDuplicates_itDoesNotCreateHistoryRecords_whenMasterAlreadyContainsValues() {
         List<Account> accounts = new List<Account>{
-            TestDataFactoryAccount.buildAccount('Filled Master','1111111111',null,'www.master.com'),
-            TestDataFactoryAccount.buildAccount('Filled Duplicate','2222222222',null,'www.duplicate.com')
+            TestDataFactoryAccount.buildAccount('Filled Master', '1111111111', null, 'www.master.com'),
+            TestDataFactoryAccount.buildAccount('Filled Duplicate', '2222222222', null, 'www.duplicate.com')
         };
         INSERT accounts;
             
@@ -111,13 +113,13 @@ private class DF_MergeDuplicateRecordsTest {
         
         List<Custom_Field_History_Tracking__c> lstCustomFieldHistoryRecord = getCustomFieldHistoryRecordsByAccountId(accounts[0].Id);
         
-        System.assertEquals(0, lstCustomFieldHistoryRecord.size());
+        Assert.areEqual(0, lstCustomFieldHistoryRecord.size());
     }
     
     private static List<Account> getAccountsByNameLike(String namePattern) {
-        return [SELECT Id,Name,Phone,Website
+        return [SELECT Id, Name, Phone, Website
                 FROM Account
-                WHERE Name LIKE :namePattern];
+                WHERE Name LIKE : namePattern];
     }
     
     private static List<Custom_Field_History_Tracking__c> getCustomFieldHistoryRecordsByAccountId(String masterAccountId) {

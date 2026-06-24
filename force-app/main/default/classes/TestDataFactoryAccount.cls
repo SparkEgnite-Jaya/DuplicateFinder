@@ -4,6 +4,7 @@ public with sharing class TestDataFactoryAccount {
     public static Account createAccount() {
         Account account = buildAccount();
         insert account;
+        
         return account;
     }
 
@@ -12,6 +13,7 @@ public with sharing class TestDataFactoryAccount {
         account.Name = 'testAccount';
         account.Phone = '1111111111';
         account.Active__c = 'true';
+        
         return account;
     }
     
@@ -20,12 +22,14 @@ public with sharing class TestDataFactoryAccount {
         account.Name = accountName;
         account.Phone = accountPhone;
         account.Active__c = accountActive;
+        
         return account;
     }
     
     public static Account buildAccount(String accountName, String accountPhone, String accountActive, String website) {
         Account account = buildAccount(accountName, accountPhone, accountActive);
         account.Website = website;
+        
         return account;
     }
 

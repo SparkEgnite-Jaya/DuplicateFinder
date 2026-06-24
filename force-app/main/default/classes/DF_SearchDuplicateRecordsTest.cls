@@ -4,11 +4,11 @@ public class DF_SearchDuplicateRecordsTest {
     @TestSetup
     static void createTestData() {        
         INSERT new List<Account>{
-            TestDataFactoryAccount.buildAccount('Duplicate Account','1111111111','true'),
-            TestDataFactoryAccount.buildAccount('Duplicate Account','1111111111','true'),
-            TestDataFactoryAccount.buildAccount('Unique Account','2222222222','false'),
-            TestDataFactoryAccount.buildAccount('Null Active Account','3333333333',null),
-            TestDataFactoryAccount.buildAccount('Null Active Account','3333333333',null)   
+            TestDataFactoryAccount.buildAccount('Duplicate Account', '1111111111', 'true'),
+            TestDataFactoryAccount.buildAccount('Duplicate Account', '1111111111', 'true'),
+            TestDataFactoryAccount.buildAccount('Unique Account', '2222222222', 'false'),
+            TestDataFactoryAccount.buildAccount('Null Active Account', '3333333333', null),
+            TestDataFactoryAccount.buildAccount('Null Active Account', '3333333333', null)   
         };
    }
     
@@ -19,12 +19,13 @@ public class DF_SearchDuplicateRecordsTest {
         DF_SearchDuplicateRecords.DuplicateSearchInput duplicateSearchInput = new DF_SearchDuplicateRecords.DuplicateSearchInput();
         duplicateSearchInput.objectName = 'Account';
         duplicateSearchInput.recordId = sourceRecords[0].Id;
-        duplicateSearchInput.fieldNames = new List<String>{'Name','Phone'};
+        duplicateSearchInput.fieldNames = new List<String>{'Name', 'Phone'};
             
         Test.startTest();
         List<DF_SearchDuplicateRecords.DuplicateSearchOutput> duplicateSearchOutput = DF_SearchDuplicateRecords.findDuplicates(new List<DF_SearchDuplicateRecords.DuplicateSearchInput>{duplicateSearchInput});
         Test.stopTest();
         
+        Assert.isFalse(duplicateSearchOutput.isEmpty());
         Assert.isTrue(duplicateSearchOutput[0].success);
         Assert.isTrue(duplicateSearchOutput[0].duplicateCount > 1);
         Assert.isNotNull(duplicateSearchOutput[0].duplicateRecords);
@@ -38,12 +39,13 @@ public class DF_SearchDuplicateRecordsTest {
         DF_SearchDuplicateRecords.DuplicateSearchInput duplicateSearchInput = new DF_SearchDuplicateRecords.DuplicateSearchInput();
         duplicateSearchInput.objectName = 'Account';
         duplicateSearchInput.recordId = sourceRecords[0].Id;
-        duplicateSearchInput.fieldNames = new List<String>{'Name','Phone'};
+        duplicateSearchInput.fieldNames = new List<String>{'Name', 'Phone'};
             
         Test.startTest();
         List<DF_SearchDuplicateRecords.DuplicateSearchOutput> duplicateSearchOutput = DF_SearchDuplicateRecords.findDuplicates(new List<DF_SearchDuplicateRecords.DuplicateSearchInput>{duplicateSearchInput});
         Test.stopTest();
         
+        Assert.isFalse(duplicateSearchOutput.isEmpty());
         Assert.isTrue(duplicateSearchOutput[0].success);
         Assert.areEqual('No duplicate records found.', duplicateSearchOutput[0].message);
         Assert.isNull(duplicateSearchOutput[0].duplicateRecords);
@@ -63,6 +65,7 @@ public class DF_SearchDuplicateRecordsTest {
         List<DF_SearchDuplicateRecords.DuplicateSearchOutput> duplicateSearchOutput = DF_SearchDuplicateRecords.findDuplicates(new List<DF_SearchDuplicateRecords.DuplicateSearchInput>{duplicateSearchInput});
         Test.stopTest();
         
+        Assert.isFalse(duplicateSearchOutput.isEmpty());
         Assert.isTrue(duplicateSearchOutput[0].success);
         Assert.isTrue(duplicateSearchOutput[0].duplicateCount > 1);
     }
@@ -78,6 +81,7 @@ public class DF_SearchDuplicateRecordsTest {
         List<DF_SearchDuplicateRecords.DuplicateSearchOutput> duplicateSearchOutput = DF_SearchDuplicateRecords.findDuplicates(new List<DF_SearchDuplicateRecords.DuplicateSearchInput>{duplicateSearchInput});
         Test.stopTest();
         
+        Assert.isFalse(duplicateSearchOutput.isEmpty());
         Assert.isFalse(duplicateSearchOutput[0].success);
         Assert.isNotNull(duplicateSearchOutput[0].message);
     }
@@ -97,9 +101,10 @@ public class DF_SearchDuplicateRecordsTest {
         secondDuplicateSearchInput.fieldNames = new List<String>{'Name'};
             
         Test.startTest();
-        List<DF_SearchDuplicateRecords.DuplicateSearchOutput> duplicateSearchOutput = DF_SearchDuplicateRecords.findDuplicates(new List<DF_SearchDuplicateRecords.DuplicateSearchInput>{firstDuplicateSearchInput,secondDuplicateSearchInput});
+        List<DF_SearchDuplicateRecords.DuplicateSearchOutput> duplicateSearchOutput = DF_SearchDuplicateRecords.findDuplicates(new List<DF_SearchDuplicateRecords.DuplicateSearchInput>{firstDuplicateSearchInput, secondDuplicateSearchInput});
         Test.stopTest();
         
+        Assert.isFalse(duplicateSearchOutput.isEmpty());
         Assert.areEqual(2, duplicateSearchOutput.size());
         Assert.isTrue(duplicateSearchOutput[0].success);
         Assert.isTrue(duplicateSearchOutput[1].success);
@@ -109,7 +114,7 @@ public class DF_SearchDuplicateRecordsTest {
     static void findDuplicates_itRespectsRecordLimit_whenMoreThanFiveRecordsExist() {
         List<Account> accountsToInsert = new List<Account>();
         for(Integer i = 0; i < 10; i++) {
-           accountsToInsert.add(TestDataFactoryAccount.buildAccount('Limit Test','9999999999',null));
+           accountsToInsert.add(TestDataFactoryAccount.buildAccount('Limit Test', '9999999999', null));
         }
         insert accountsToInsert;
         
@@ -124,6 +129,7 @@ public class DF_SearchDuplicateRecordsTest {
         List<DF_SearchDuplicateRecords.DuplicateSearchOutput> duplicateSearchOutput = DF_SearchDuplicateRecords.findDuplicates(new List<DF_SearchDuplicateRecords.DuplicateSearchInput>{duplicateSearchInput});
         Test.stopTest();
         
+        Assert.isFalse(duplicateSearchOutput.isEmpty());
         Assert.isTrue(duplicateSearchOutput[0].duplicateCount <= 5);
     }
 }

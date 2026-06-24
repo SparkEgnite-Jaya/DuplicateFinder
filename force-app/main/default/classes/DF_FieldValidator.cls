@@ -16,14 +16,14 @@ public class DF_FieldValidator {
     
     @InvocableMethod(label='Validate Duplicate Fields'
                      description='Validates duplicate matching fields configured in metadata')
-    public static List<FieldValidatorOutputWrapper> validateFields(List<FieldValidatorInputWrapper> lstFieldValidatorInputWrapper) {
-        List<FieldValidatorOutputWrapper> lstFieldValidatorOutputWrapper = new List<FieldValidatorOutputWrapper>();
+    public static List<FieldValidatorOutputWrapper> validateFields(List<FieldValidatorInputWrapper> fieldValidatorInputWrappers) {
+        List<FieldValidatorOutputWrapper> fieldValidatorOutputWrappers = new List<FieldValidatorOutputWrapper>();
         
-        for(FieldValidatorInputWrapper fieldValidatorInputWrapper : lstFieldValidatorInputWrapper) {
-            lstFieldValidatorOutputWrapper.add(processRequest(fieldValidatorInputWrapper));
+        for(FieldValidatorInputWrapper fieldValidatorInputWrapper : fieldValidatorInputWrappers) {
+            fieldValidatorOutputWrappers.add(processRequest(fieldValidatorInputWrapper));
         }
         
-        return lstFieldValidatorOutputWrapper;
+        return fieldValidatorOutputWrappers;
     }
     
     private static FieldValidatorOutputWrapper processRequest(FieldValidatorInputWrapper fieldValidatorInputWrapper) {
