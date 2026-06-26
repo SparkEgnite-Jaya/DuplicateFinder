@@ -113,7 +113,6 @@ public class DF_SearchDuplicateRecords {
  
     private static DuplicateSearchOutput buildSuccessOutput(List<SObject> duplicateRecords,List<String> fieldNames){
         DuplicateSearchOutput duplicateSearchOutput = new DuplicateSearchOutput();
-        
         duplicateSearchOutput.success = true;
         duplicateSearchOutput.duplicateCount = duplicateRecords.size();
         

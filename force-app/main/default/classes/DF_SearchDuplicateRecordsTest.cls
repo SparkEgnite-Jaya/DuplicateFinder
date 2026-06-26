@@ -112,17 +112,13 @@ public class DF_SearchDuplicateRecordsTest {
     
     @IsTest
     static void findDuplicates_itRespectsRecordLimit_whenMoreThanFiveRecordsExist() {
-        List<Account> accountsToInsert = new List<Account>();
-        for(Integer i = 0; i < 10; i++) {
-           accountsToInsert.add(TestDataFactoryAccount.buildAccount('Limit Test', '9999999999', null));
-        }
-        insert accountsToInsert;
+        List<Account> accountsToInsert = TestDataFactoryAccount.createAccounts(10);
         
-        Account sourceRecord = [SELECT Id FROM Account WHERE Name = 'Limit Test' LIMIT 1];
+        List<Account> sourceRecords = TestDataFactoryAccount.getAccountByName('Limit Test');
         
         DF_SearchDuplicateRecords.DuplicateSearchInput duplicateSearchInput = new DF_SearchDuplicateRecords.DuplicateSearchInput();
         duplicateSearchInput.objectName = 'Account';
-        duplicateSearchInput.recordId = sourceRecord.Id;
+        duplicateSearchInput.recordId = sourceRecords[0].Id;
         duplicateSearchInput.fieldNames = new List<String>{'Name'};
             
         Test.startTest();

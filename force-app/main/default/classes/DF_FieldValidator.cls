@@ -56,9 +56,7 @@ public class DF_FieldValidator {
 
         List<String> metadataConfiguredFields = new List<String>();
 
-        for(DF_Duplicate_Field_Config__mdt duplicateFieldMetadataConfig : [SELECT Field_API_Name__c,Object_Name__c
-                                                                           FROM DF_Duplicate_Field_Config__mdt
-                                                                           WHERE Object_Name__c = :objectName]) {
+        for(DF_Duplicate_Field_Config__mdt duplicateFieldMetadataConfig : getConfiguredObjectFields(objectName)) {
             metadataConfiguredFields.add(duplicateFieldMetadataConfig.Field_API_Name__c);
         }
 
@@ -133,4 +131,9 @@ public class DF_FieldValidator {
             																	  : 'Some configured fields are unsupported.';
     } 
     
+    private static List<DF_Duplicate_Field_Config__mdt> getConfiguredObjectFields(String objectName){
+        return [SELECT Field_API_Name__c,Object_Name__c
+                FROM DF_Duplicate_Field_Config__mdt
+                WHERE Object_Name__c = :objectName];
+    }
 }

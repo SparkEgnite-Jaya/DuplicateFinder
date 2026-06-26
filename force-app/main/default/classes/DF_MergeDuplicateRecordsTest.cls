@@ -111,9 +111,9 @@ private class DF_MergeDuplicateRecordsTest {
         DF_MergeDuplicateRecords.mergeDuplicates(new List<DF_MergeDuplicateRecords.MergeDuplicateInput>{mergeDuplicateInput});
         Test.stopTest();
         
-        List<Custom_Field_History_Tracking__c> lstCustomFieldHistoryRecord = getCustomFieldHistoryRecordsByAccountId(accounts[0].Id);
+        List<Custom_Field_History_Tracking__c> customFieldHistoryRecords = getCustomFieldHistoryRecordsByAccountId(accounts[0].Id);
         
-        Assert.areEqual(0, lstCustomFieldHistoryRecord.size());
+        Assert.areEqual(0, customFieldHistoryRecords.size());
     }
     
     private static List<Account> getAccountsByNameLike(String namePattern) {
