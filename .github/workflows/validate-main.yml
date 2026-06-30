@@ -1,0 +1,44 @@
+name: Validate PR to Main
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20" # Explicitly sets Node 20 to prevent the Salesforce CLI connection crash
+
+      - name: Install Salesforce CLI
+        run: |
+          npm install -g @salesforce/cli@2.141.6
+          sf --version
+
+      - name: Authenticate Packaging Org
+        env:
+          SFDX_AUTH_URL: ${{ secrets.PACKAGING_ORG_SECRET }}
+        run: |
+          # Safely use environment variable to write out the secret without corruption
+          echo "$SFDX_AUTH_URL" > authfile.txt
+
+          sf org login sfdx-url \
+            --sfdx-url-file authfile.txt \
+            --alias DuplicateFinderPackagingOrg
+
+      - name: Validate Deployment
+        run: |
+          sf project deploy validate \
+            --target-org DuplicateFinderPackagingOrg \
+            --source-dir force-app \
+            --test-level RunLocalTests \
+            --coverage-formatters text \
+            --wait 60

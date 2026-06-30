@@ -1,0 +1,61 @@
+name: Deploy to Packaging Org
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20" # Downgraded to 20 to fix the Salesforce CLI / Node 22+ networking crash
+
+      - name: Install Salesforce CLI
+        run: |
+          npm install -g @salesforce/cli@2.141.6
+          sf --version
+
+      - name: Verify Environment
+        run: |
+          echo "Node Version:"
+          node --version
+
+          echo "NPM Version:"
+          npm --version
+
+          echo "Salesforce CLI Version:"
+          sf --version
+
+      - name: Authenticate Packaging Org
+        env:
+          SFDX_AUTH_URL: ${{ secrets.PACKAGING_ORG_SECRET }}
+        run: |
+          # Safely use environment variable to write out the secret
+          echo "$SFDX_AUTH_URL" > authfile.txt
+
+          echo "Auth File Size:"
+          wc -c authfile.txt
+
+          sf org login sfdx-url \
+            --sfdx-url-file authfile.txt \
+            --alias DuplicateFinderPackingOrg
+
+      - name: Verify Org Login
+        run: |
+          sf org list --all
+
+      - name: Deploy to Packaging Org
+        run: |
+          sf project deploy start \
+            --target-org DuplicateFinderPackingOrg \
+            --source-dir force-app \
+            --test-level RunLocalTests \
+            --wait 60
