@@ -29,7 +29,7 @@ public class DF_DeleteOldCustomFieldHistoryBatchTest {
             Account account = TestDataFactoryAccount.buildAccount('Test Account', '1111111111', 'true');
             INSERT account;
             
-            Custom_Field_History_Tracking__c oldCustomFieldHistoryRecord = new Custom_Field_History_Tracking__c(Name = 'Account', Master_Record_Id__c = account.Id, Field_Name__c = 'Phone');
+            Custom_Field_History_Tracking__c oldCustomFieldHistoryRecord = new Custom_Field_History_Tracking__c(Name = 'Account', Master_Record_Id__c = account.Id, Field_Name__c = 'Phone',Modified_By__c = adminUser.Id);
             INSERT oldCustomFieldHistoryRecord;
             
             Test.setCreatedDate(oldCustomFieldHistoryRecord.Id, System.now().addDays(-10));
@@ -52,7 +52,7 @@ public class DF_DeleteOldCustomFieldHistoryBatchTest {
             Account account = new Account(Name = 'Test Account');
             Insert account;
             
-            Custom_Field_History_Tracking__c recentCustomFieldHistoryRecord = new Custom_Field_History_Tracking__c(Name = 'Account', Master_Record_Id__c = account.Id, Field_Name__c = 'Phone');
+            Custom_Field_History_Tracking__c recentCustomFieldHistoryRecord = new Custom_Field_History_Tracking__c(Name = 'Account', Master_Record_Id__c = account.Id, Field_Name__c = 'Phone',Modified_By__c = adminUser.Id);
             Insert recentCustomFieldHistoryRecord;
             
             Test.startTest();
