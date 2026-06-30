@@ -1,0 +1,33 @@
+{
+  "required" : [ "fieldNames", "objectName", "recordId" ],
+  "unevaluatedProperties" : false,
+  "properties" : {
+    "fieldNames" : {
+      "title" : "fieldNames",
+      "description" : "field Names",
+      "maxItems" : 2000,
+      "items" : {
+        "lightning:type" : "lightning__textType"
+      },
+      "lightning:type" : "lightning__listType",
+      "lightning:isPII" : false,
+      "copilotAction:isUserInput" : false
+    },
+    "objectName" : {
+      "title" : "objectName",
+      "description" : "object name",
+      "lightning:type" : "lightning__textType",
+      "lightning:isPII" : false,
+      "copilotAction:isUserInput" : false
+    },
+    "recordId" : {
+      "title" : "recordId",
+      "description" : "record id",
+      "lightning:type" : "lightning__textType",
+      "lightning:isPII" : false,
+      "copilotAction:isUserInput" : false
+    }
+  },
+  "lightning:type" : "lightning__objectType",
+  "lightning:textIndexed" : true
+}

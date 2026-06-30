@@ -1,0 +1,5 @@
+{
+  "title" : "Duplicate Record UI",
+  "description" : "Duplicate Record UI",
+  "lightning:type" : "@apexClassType/c__DF_SearchDuplicateRecords$DuplicateRecordsInfo"
+}
