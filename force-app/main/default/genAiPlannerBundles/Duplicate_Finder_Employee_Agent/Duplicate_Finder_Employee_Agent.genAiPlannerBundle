@@ -47,9 +47,9 @@
         <localActionLinks>
             <functionName>Merge_Duplicates_Using_FieldValues_179dL000004Mr1l</functionName>
         </localActionLinks>
-        <localActionLinks>
+       <!-- <localActionLinks>
             <functionName xsi:nil="true"/>
-        </localActionLinks>
+        </localActionLinks> -->
         <localActionLinks>
             <functionName>Find_Duplicate_Records_179dL000004Mr1l</functionName>
         </localActionLinks>
