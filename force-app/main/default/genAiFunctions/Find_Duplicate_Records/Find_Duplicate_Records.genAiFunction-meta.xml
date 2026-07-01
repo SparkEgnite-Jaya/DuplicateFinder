@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenAiFunction xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Find duplicate records using configured fields</description>
+    <developerName>Find_Duplicate_Records</developerName>
+    <invocationTarget>DF_SearchDuplicateRecords</invocationTarget>
+    <invocationTargetType>apex</invocationTargetType>
+    <isConfirmationRequired>false</isConfirmationRequired>
+    <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+    <localDeveloperName>Find_Duplicate_Records</localDeveloperName>
+    <masterLabel>Find Duplicate Records</masterLabel>
+    <progressIndicatorMessage>Searching Duplicates...</progressIndicatorMessage>
+</GenAiFunction>

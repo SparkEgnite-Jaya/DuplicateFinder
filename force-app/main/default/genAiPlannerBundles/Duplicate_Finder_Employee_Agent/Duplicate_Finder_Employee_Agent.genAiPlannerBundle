@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenAiPlannerBundle xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <description>This agent will help to find duplicates for given object and provide list or duplicate records. also help to merge records.</description>
+    <localActionLinks>
+        <genAiFunctionName>AnswerQuestionsWithKnowledge_16jdL0000038MUf</genAiFunctionName>
+    </localActionLinks>
+    <localTopicLinks>
+        <genAiPluginName>Duplicate_and_Merging_Management_16jdL0000038MUf</genAiPluginName>
+    </localTopicLinks>
+    <localTopics>
+        <fullName>Duplicate_and_Merging_Management_16jdL0000038MUf</fullName>
+        <canEscalate>false</canEscalate>
+        <description>Handles the validation fields based on user input.</description>
+        <developerName>Duplicate_and_Merging_Management_16jdL0000038MUf</developerName>
+        <genAiPluginInstructions>
+            <description>Initially invoke &quot;GetRecordDetails&quot; action using the current Record Id. Pass entityType to &quot;Validate_Duplicate_Fields&quot;.</description>
+            <developerName>instructions_0_1781599866338</developerName>
+            <language>en_US</language>
+            <masterLabel>instructions_0_1781599866338</masterLabel>
+            <sortOrder>0</sortOrder>
+        </genAiPluginInstructions>
+        <genAiPluginInstructions>
+            <description>Once &quot;Validate_Duplicate_Fields&quot; this action executed : 
+- If object not found in configuration tell user configure object in &quot;DF Duplicate Field Config&quot; Custom Metadata.
+- If unsupportedFields fields are empty then ask users can we procces with duplicate detection with SupportedFields.
+- If Unsupported fields are present ask user can we proceed with supported fields. mentioned all supported fields.
+- Once User give Confirmation call Next Action &quot;Find_Duplicate_Records&quot; Action to find Duplicate Records.</description>
+            <developerName>instructions_0_1781608918120</developerName>
+            <language>en_US</language>
+            <masterLabel>instructions_0_1781608918120</masterLabel>
+            <sortOrder>1</sortOrder>
+        </genAiPluginInstructions>
+        <genAiPluginInstructions>
+            <description>Once &quot;Find_Duplicate_Records&quot; action executed show duplicate records to user and ask &quot;If you want to merge record. please enter Yes&quot;. once user enter &quot;Yes&quot; ask for master record Id and pass that data to &quot;Merge_Duplicates_Using_FieldValues&quot; action.</description>
+            <developerName>instruction_1</developerName>
+            <language xsi:nil="true"/>
+            <masterLabel>Instruction 1</masterLabel>
+            <sortOrder>2</sortOrder>
+        </genAiPluginInstructions>
+        <language>en_US</language>
+        <localActionLinks>
+            <functionName>GetRecordDetails_179dL000004Mr1l</functionName>
+        </localActionLinks>
+        <localActionLinks>
+            <functionName>Validate_Duplicate_Fields_179dL000004Mr1l</functionName>
+        </localActionLinks>
+        <localActionLinks>
+            <functionName>Merge_Duplicates_Using_FieldValues_179dL000004Mr1l</functionName>
+        </localActionLinks>
+       <!-- <localActionLinks>
+            <functionName xsi:nil="true"/>
+        </localActionLinks> -->
+        <localActionLinks>
+            <functionName>Find_Duplicate_Records_179dL000004Mr1l</functionName>
+        </localActionLinks>
+        <localActions>
+            <fullName>Find_Duplicate_Records_179dL000004Mr1l</fullName>
+            <description>Find duplicate records using configured fields</description>
+            <developerName>Find_Duplicate_Records_179dL000004Mr1l</developerName>
+            <invocationTarget>DF_SearchDuplicateRecords</invocationTarget>
+            <invocationTargetType>apex</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+            <localDeveloperName>Find_Duplicate_Records</localDeveloperName>
+            <masterLabel>Find Duplicate Records</masterLabel>
+            <progressIndicatorMessage>Searching Duplicates...</progressIndicatorMessage>
+            <source>Find_Duplicate_Records</source>
+        </localActions>
+        <localActions>
+            <fullName>Merge_Duplicates_Using_FieldValues_179dL000004Mr1l</fullName>
+            <description>Merge duplicate records</description>
+            <developerName>Merge_Duplicates_Using_FieldValues_179dL000004Mr1l</developerName>
+            <invocationTarget>DF_MergeDuplicateRecords</invocationTarget>
+            <invocationTargetType>apex</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+            <localDeveloperName>Merge_Duplicates_Using_FieldValues</localDeveloperName>
+            <masterLabel>Merge Duplicates Using Field Values.</masterLabel>
+            <progressIndicatorMessage>Merging In-Progress</progressIndicatorMessage>
+            <source>Merge_Duplicates_Using_FieldValues</source>
+        </localActions>
+        <localActions>
+            <fullName>Validate_Duplicate_Fields_179dL000004Mr1l</fullName>
+            <description>Validates duplicate matching fields configured in metadata</description>
+            <developerName>Validate_Duplicate_Fields_179dL000004Mr1l</developerName>
+            <invocationTarget>DF_FieldValidator</invocationTarget>
+            <invocationTargetType>apex</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+            <localDeveloperName>Validate_Duplicate_Fields</localDeveloperName>
+            <masterLabel>Validate Duplicate Fields</masterLabel>
+            <progressIndicatorMessage>Validating Fields....</progressIndicatorMessage>
+            <source>Validate_Duplicate_Fields</source>
+        </localActions>
+        <localActions>
+            <fullName>GetRecordDetails_179dL000004Mr1l</fullName>
+            <description>Generates a text blob containing record details, including object fields and values and records from related lists.</description>
+            <developerName>GetRecordDetails_179dL000004Mr1l</developerName>
+            <invocationTarget>getDataForGrounding</invocationTarget>
+            <invocationTargetType>standardInvocableAction</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+            <localDeveloperName>GetRecordDetails</localDeveloperName>
+            <masterLabel>Get Record Details</masterLabel>
+            <progressIndicatorMessage>Getting details</progressIndicatorMessage>
+            <source>EmployeeCopilot__GetRecordDetails</source>
+        </localActions>
+        <localDeveloperName>Duplicate_and_Merging_Management</localDeveloperName>
+        <masterLabel>Duplicate and Merging Management</masterLabel>
+        <pluginType>Topic</pluginType>
+        <scope>Your job is only to validate the fields given in custom metadata. Do not attempt to respond to inquiries outside this validation task.</scope>
+    </localTopics>
+    <masterLabel>Duplicate Finder Employee Agent</masterLabel>
+    <plannerActions>
+        <fullName>AnswerQuestionsWithKnowledge_16jdL0000038MUf</fullName>
+        <description>Answers questions about company policies and procedures, troubleshooting steps, or product information. For example: “What is your return policy?” “How do I fix an issue?” or “What features does a product have?”</description>
+        <developerName>AnswerQuestionsWithKnowledge_16jdL0000038MUf</developerName>
+        <invocationTarget>streamKnowledgeSearch</invocationTarget>
+        <invocationTargetType>standardInvocableAction</invocationTargetType>
+        <isConfirmationRequired>false</isConfirmationRequired>
+        <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+        <localDeveloperName>AnswerQuestionsWithKnowledge</localDeveloperName>
+        <masterLabel>Answer Questions with Knowledge</masterLabel>
+        <progressIndicatorMessage>Getting answers</progressIndicatorMessage>
+        <source>EmployeeCopilot__AnswerQuestionsWithKnowledge</source>
+    </plannerActions>
+    <plannerSurfaces>
+        <adaptiveResponseAllowed>true</adaptiveResponseAllowed>
+        <callRecordingAllowed>false</callRecordingAllowed>
+        <surface>SurfaceAction__Messaging</surface>
+        <surfaceType>Messaging</surfaceType>
+    </plannerSurfaces>
+    <plannerType>AiCopilot__ReAct</plannerType>
+</GenAiPlannerBundle>

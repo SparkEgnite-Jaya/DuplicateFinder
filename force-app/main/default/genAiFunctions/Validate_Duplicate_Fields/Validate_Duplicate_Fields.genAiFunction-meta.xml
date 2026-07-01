@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenAiFunction xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Validates duplicate matching fields configured in metadata</description>
+    <developerName>Validate_Duplicate_Fields</developerName>
+    <invocationTarget>DF_FieldValidator</invocationTarget>
+    <invocationTargetType>apex</invocationTargetType>
+    <isConfirmationRequired>false</isConfirmationRequired>
+    <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+    <localDeveloperName>Validate_Duplicate_Fields</localDeveloperName>
+    <masterLabel>Validate Duplicate Fields</masterLabel>
+    <progressIndicatorMessage>Validating Fields....</progressIndicatorMessage>
+</GenAiFunction>

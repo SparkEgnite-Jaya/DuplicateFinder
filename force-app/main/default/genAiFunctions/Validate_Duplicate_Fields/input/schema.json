@@ -1,0 +1,14 @@
+{
+  "required" : [ "entityType" ],
+  "unevaluatedProperties" : false,
+  "properties" : {
+    "entityType" : {
+      "title" : "entityType",
+      "description" : "we get this value from \"GetRecordDetails\" Action",
+      "lightning:type" : "lightning__textType",
+      "lightning:isPII" : false,
+      "copilotAction:isUserInput" : false
+    }
+  },
+  "lightning:type" : "lightning__objectType"
+}
