@@ -4,7 +4,7 @@ public class DF_DeleteOldCustomFieldHistoryBatchTest {
     @TestSetup
     static void setup() {
         Profile adminProfile = [SELECT Id FROM Profile WHERE Name = 'System Administrator' LIMIT 1];
-
+        
         User adminUser = new User(
             Alias = 'tadmin',
             Email = 'testadmin@example.com',
@@ -16,10 +16,32 @@ public class DF_DeleteOldCustomFieldHistoryBatchTest {
             TimeZoneSidKey = 'America/Los_Angeles',
             Username = 'testadmin' + System.currentTimeMillis() + '@example.com'
         );
-
+        
         INSERT adminUser;
+        
+        PermissionSet ps = new PermissionSet(
+            Label = 'CI_Batch_Test_Access', 
+            Name = 'CI_Batch_Test_Access'
+        );
+        INSERT ps;
+        
+        ObjectPermissions op = new ObjectPermissions(
+            ParentId = ps.Id,
+            SobjectType = 'Custom_Field_History_Tracking__c',
+            PermissionsRead = true,
+            PermissionsCreate = true,
+            PermissionsDelete = true
+        );
+        INSERT op;
+        
+        // Assign it to our test admin user
+        PermissionSetAssignment psa = new PermissionSetAssignment(
+            AssigneeId = adminUser.Id,
+            PermissionSetId = ps.Id
+        );
+        INSERT psa;
     }
-
+    
     
     @IsTest
     static void execute_itDeletesRecords_whenRecordsAreOlderThanSevenDays() {
