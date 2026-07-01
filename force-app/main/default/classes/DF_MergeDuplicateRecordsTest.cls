@@ -30,6 +30,7 @@ private class DF_MergeDuplicateRecordsTest {
             SobjectType = 'Custom_Field_History_Tracking__c',
             PermissionsRead = true,
             PermissionsCreate = true,
+            PermissionsEdit = true,
             PermissionsDelete = true
         );
         INSERT op;
@@ -41,12 +42,14 @@ private class DF_MergeDuplicateRecordsTest {
         );
         INSERT psa;
         
-        INSERT new List<Account>{
-            TestDataFactoryAccount.buildAccount('Master Account', null, null),
+        System.runAs(adminUser) {
+            INSERT new List<Account>{
+                TestDataFactoryAccount.buildAccount('Master Account', null, null),
                 TestDataFactoryAccount.buildAccount('Duplicate 1', '9876543210', null, 'www.test1.com'),
                 TestDataFactoryAccount.buildAccount('Duplicate 2', '9999999999', null, 'www.test2.com') 
-                };
-                    }
+            };
+       }
+    }
     
     @IsTest
     static void mergeDuplicates_itUpdatesMasterRecord_whenDuplicateContainsValues() {

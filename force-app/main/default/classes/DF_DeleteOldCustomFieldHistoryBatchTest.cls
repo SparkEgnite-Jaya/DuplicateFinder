@@ -30,6 +30,7 @@ public class DF_DeleteOldCustomFieldHistoryBatchTest {
             SobjectType = 'Custom_Field_History_Tracking__c',
             PermissionsRead = true,
             PermissionsCreate = true,
+            PermissionsEdit = true,
             PermissionsDelete = true
         );
         INSERT op;
