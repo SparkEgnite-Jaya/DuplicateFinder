@@ -48,7 +48,6 @@ public class DF_FieldValidator {
         return fieldValidatorOutputWrapper;
     }
     
-    //Retrieves duplicate matching fields configured for the specified object from Custom Metadata.
     private static List<String> getConfiguredFields(String objectName) {
         if(Test.isRunningTest() && testDataFields != null) {
             return testDataFields;
@@ -63,7 +62,6 @@ public class DF_FieldValidator {
         return metadataConfiguredFields;
     }
     
-    //Initializes and returns an empty output wrapper.
     private static FieldValidatorOutputWrapper initializeOutput() {
         FieldValidatorOutputWrapper fieldValidatorOutputWrapper = new FieldValidatorOutputWrapper();
         fieldValidatorOutputWrapper.supportedFields = new List<String>();
@@ -72,7 +70,6 @@ public class DF_FieldValidator {
         return fieldValidatorOutputWrapper;
     }
     
-    //Returns all fields available on the specified object.
     private static Map<String, Schema.SObjectField> getFieldMap(String objectName) {
         return Schema.getGlobalDescribe()
                      .get(objectName)
@@ -81,7 +78,6 @@ public class DF_FieldValidator {
                      .getMap();
     }
     
-    //Validates configured fields and categorizes them into supported and unsupported fields.
     private static void validateConfiguredFields(String objectName,List<String> configuredFields,FieldValidatorOutputWrapper result) {
         Map<String, Schema.SObjectField> objectFieldsMap = getFieldMap(objectName);
         
@@ -95,7 +91,6 @@ public class DF_FieldValidator {
         }
     }
     
-    //Checks whether the field exists and is eligible for duplicate matching.
     private static Boolean isSupportedField(String fieldName,Map<String, Schema.SObjectField> objectFieldsMap) {
         if(!objectFieldsMap.containsKey(fieldName)) {
             return false;
@@ -105,11 +100,9 @@ public class DF_FieldValidator {
         
         return fieldDescribeResult .isAccessible()
             && fieldDescribeResult .isFilterable()
-            && isSupportedType(fieldDescribeResult .getType());
+            && isSupportedType(fieldDescribeResult.getType());
     }
     
-    
-    //field type is supported for duplicate detection.
     private static Boolean isSupportedType(Schema.DisplayType fieldType) {
         return fieldType == Schema.DisplayType.String
             || fieldType == Schema.DisplayType.Email
@@ -124,7 +117,6 @@ public class DF_FieldValidator {
         	|| fieldType == Schema.DisplayType.Boolean;
     }
     
-    //Sets the final validation status and message.
     private static void setResultStatus(FieldValidatorOutputWrapper fieldValidatorOutputWrapper) {
         fieldValidatorOutputWrapper.success = fieldValidatorOutputWrapper.unsupportedFields.isEmpty();
         fieldValidatorOutputWrapper.message = fieldValidatorOutputWrapper.success ? 'All configured fields are supported.'

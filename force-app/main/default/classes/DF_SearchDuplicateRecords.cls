@@ -42,13 +42,13 @@ public class DF_SearchDuplicateRecords {
     private static DuplicateSearchOutput processRequest(DuplicateSearchInput duplicateSearchInput) {
         try {
             SObject sourceRecord = getSourceRecord(duplicateSearchInput);
-            String whereClause = buildDuplicateCriteria(sourceRecord,duplicateSearchInput.fieldNames);
+            String whereClause = buildDuplicateCriteria(sourceRecord, duplicateSearchInput.fieldNames);
             
             if (String.isBlank(whereClause)) {
                 return buildErrorOutput('No field values available for duplicate search.');
             }
             
-            List<SObject> duplicateRecords = findMatchingRecords(duplicateSearchInput.objectName,duplicateSearchInput.recordId,duplicateSearchInput.fieldNames,whereClause);
+            List<SObject> duplicateRecords = findMatchingRecords(duplicateSearchInput.objectName, duplicateSearchInput.fieldNames, whereClause);
             
             return buildSuccessOutput(duplicateRecords,duplicateSearchInput.fieldNames);
         } catch (Exception e) {
@@ -69,7 +69,7 @@ public class DF_SearchDuplicateRecords {
         return Database.query(query);
     }
     
-    private static String buildDuplicateCriteria(SObject sourceRecord,List<String> fieldNames) {
+    private static String buildDuplicateCriteria(SObject sourceRecord, List<String> fieldNames) {
         List<String> conditions = new List<String>();
         
         for (String fieldName : fieldNames) {
@@ -96,7 +96,7 @@ public class DF_SearchDuplicateRecords {
         return fieldName + ' = ' + String.valueOf(sourceFieldvalue);
     }
  
-    private static List<SObject> findMatchingRecords(String objectName,Id recordId,List<String> fieldNames,String whereClause) {
+    private static List<SObject> findMatchingRecords(String objectName, List<String> fieldNames, String whereClause) {
         List<String> queryFields = new List<String>{'Id'};
         queryFields.addAll(fieldNames);
         
@@ -111,7 +111,7 @@ public class DF_SearchDuplicateRecords {
         return Database.query(query);
     }
  
-    private static DuplicateSearchOutput buildSuccessOutput(List<SObject> duplicateRecords,List<String> fieldNames){
+    private static DuplicateSearchOutput buildSuccessOutput(List<SObject> duplicateRecords, List<String> fieldNames){
         DuplicateSearchOutput duplicateSearchOutput = new DuplicateSearchOutput();
         duplicateSearchOutput.success = true;
         duplicateSearchOutput.duplicateCount = duplicateRecords.size();
@@ -137,7 +137,7 @@ public class DF_SearchDuplicateRecords {
         return duplicateSearchOutput;
     }
 
-    private static DuplicateRecordsInfo convertToWrapper(List<SObject> records,List<String> fieldNames){
+    private static DuplicateRecordsInfo convertToWrapper(List<SObject> records, List<String> fieldNames){
         DuplicateRecordsInfo duplicateRecordsInfo = new DuplicateRecordsInfo();
         duplicateRecordsInfo.lstDuplicateRecordInfo = new List<DuplicateRecordInfo>();
         
@@ -145,7 +145,7 @@ public class DF_SearchDuplicateRecords {
             
             DuplicateRecordInfo recordInfo = new DuplicateRecordInfo();
             recordInfo.recordId = (Id)record.get('Id');
-            recordInfo.matchedFields =  new List<MatchedField>();
+            recordInfo.matchedFields = new List<MatchedField>();
             
             for(String fieldName : fieldNames){
                 
@@ -162,23 +162,25 @@ public class DF_SearchDuplicateRecords {
         return duplicateRecordsInfo;
     }
     
-    private static Integer getRecordLimit(){
-        Integer limitValue = 5;
-
-        Duplicate_Finder_Setting__c duplicateFinderCustomSettingRecord = Duplicate_Finder_Setting__c.getOrgDefaults();
-
-        if(duplicateFinderCustomSettingRecord != null && duplicateFinderCustomSettingRecord.Record_Limit__c != null){
-            limitValue = Integer.valueOf(duplicateFinderCustomSettingRecord.Record_Limit__c);
+    private static Integer getRecordLimit() {
+        final Integer DEFAULT_RECORD_LIMIT = 5;
+        
+        Integer limitValue = DEFAULT_RECORD_LIMIT;
+        
+        Duplicate_Finder_Setting__c duplicateFinderCustomSettingRecord =
+            Duplicate_Finder_Setting__c.getOrgDefaults();
+        
+        if (duplicateFinderCustomSettingRecord != null &&
+            duplicateFinderCustomSettingRecord.Record_Limit__c != null) {
+                limitValue = Integer.valueOf(
+                    duplicateFinderCustomSettingRecord.Record_Limit__c
+                );
+            }
+        
+        if (limitValue < 1 || limitValue > DEFAULT_RECORD_LIMIT) {
+            limitValue = DEFAULT_RECORD_LIMIT;
         }
-
-        if(limitValue < 1){
-            limitValue = 5;
-        }
-
-        if(limitValue > 5){
-            limitValue = 5;
-        }
-
+        
         return limitValue;
     }
 }

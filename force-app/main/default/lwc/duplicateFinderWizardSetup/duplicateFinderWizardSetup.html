@@ -1,0 +1,65 @@
+<template>
+    <lightning-card title="Package Configuration Wizard" icon-name="utility:setup">
+        <div class="slds-p-around_medium">
+            
+            <lightning-progress-indicator current-step={currentStep} type="path" variant="base" class="slds-m-bottom_large">
+                <lightning-progress-step label="Welcome" value="1"></lightning-progress-step>
+                <lightning-progress-step label="Metadata Setup" value="2"></lightning-progress-step>
+                <lightning-progress-step label="Custom Settings" value="3"></lightning-progress-step>
+                <lightning-progress-step label="Run Execution" value="4"></lightning-progress-step>
+            </lightning-progress-indicator>
+
+            <template if:true={isStep1}>
+                <div class="slds-text-align_center slds-p-vertical_large">
+                    <h2 class="slds-text-heading_large slds-m-bottom_small">Welcome to the Managed Package!</h2>
+                    <p class="slds-text-heading_small slds-m-bottom_large">Let's walk through the initial setup steps to get your tracking engine running perfectly.</p>
+                    <lightning-button label="Get Started" variant="brand" onclick={handleNext}></lightning-button>
+                </div>
+            </template>
+
+            <template if:true={isStep2}>
+                <div class="slds-p-vertical_medium">
+                    <h2 class="slds-text-heading_medium slds-m-bottom_small">Step 2: Core Platform Metadata</h2>
+                    <p class="slds-m-bottom_medium">Please configure the global architecture rules for the package tracking framework below.</p>
+                    
+                    <div class="slds-box slds-theme_shade slds-m-bottom_medium">
+                        <p>ℹ️ Custom Metadata settings apply globally to your Salesforce organization instance context.</p>
+                    </div>
+
+                    <div class="slds-m-top_large">
+                        <lightning-button label="Back" class="slds-m-right_small" onclick={handleBack}></lightning-button>
+                        <lightning-button label="Next" variant="brand" onclick={handleNext}></lightning-button>
+                    </div>
+                </div>
+            </template>
+
+            <template if:true={isStep3}>
+                <div class="slds-p-vertical_medium">
+                    <h2 class="slds-text-heading_medium slds-m-bottom_small">Step 3: History Tracking Parameters</h2>
+                    <p class="slds-m-bottom_medium">Define your operational data operational preferences (e.g., threshold limits, target frequencies).</p>
+                    
+                    <lightning-input label="History Retention Threshold (Days)" type="number" value="7" class="slds-m-bottom_small"></lightning-input>
+                    
+                    <div class="slds-m-top_large">
+                        <lightning-button label="Back" class="slds-m-right_small" onclick={handleBack}></lightning-button>
+                        <lightning-button label="Save & Next" variant="brand" onclick={handleSaveAndNext}></lightning-button>
+                    </div>
+                </div>
+            </template>
+
+            <template if:true={isStep4}>
+                <div class="slds-text-align_center slds-p-vertical_large">
+                    <h2 class="slds-text-heading_medium slds-m-bottom_small">Step 4: Ready to Initialize</h2>
+                    <p class="slds-m-bottom_large">All configurations have been successfully saved. You can now execute the tracking synchronization batch job.</p>
+                    
+                    <div class="slds-m-bottom_large">
+                        <lightning-button label="Start Engine Batch Job" variant="success" icon-name="utility:play" onclick={handleStartBatch}></lightning-button>
+                    </div>
+
+                    <lightning-button label="Back to Settings" onclick={handleBack}></lightning-button>
+                </div>
+            </template>
+
+        </div>
+    </lightning-card>
+</template>

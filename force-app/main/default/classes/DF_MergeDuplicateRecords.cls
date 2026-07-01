@@ -13,24 +13,36 @@ public class DF_MergeDuplicateRecords {
     
     @InvocableMethod( label='Merge Duplicates Using Field Values.' 
                      description='Merge duplicate records' ) 
-    public static List<MergeDuplicateOutput> mergeDuplicates(List<MergeDuplicateInput> MergeDuplicateInputs) {
-        MergeDuplicateInput mergeDuplicateInput = MergeDuplicateInputs[0];
-        Set<Id> duplicateRecordIds = getDuplicateIds(mergeDuplicateInput.masterId, mergeDuplicateInput.duplicateIds);
+    public static List<MergeDuplicateOutput> mergeDuplicates(List<MergeDuplicateInput> mergeDuplicateInputs) {
+        if (mergeDuplicateInputs == null || mergeDuplicateInputs.isEmpty()) {
+            return buildResponse(null, 'No merge request was provided.');
+        }
         
-        Map<String, Schema.SObjectField> fieldMap = getFieldMap(mergeDuplicateInput.objectName);
-        List<String> mergeableFields = getMergeableFields(fieldMap);
+        MergeDuplicateInput mergeDuplicateInput = mergeDuplicateInputs[0];
         
-        SObject masterRecord = getMasterRecord(mergeDuplicateInput.objectName, mergeDuplicateInput.masterId, mergeableFields);
-        List<String> emptyFieldsOfMasterRecord = getEmptyFields(masterRecord, mergeableFields);
-
-        List<SObject> duplicateRecords = getDuplicateRecords(mergeDuplicateInput.objectName, duplicateRecordIds, emptyFieldsOfMasterRecord);
-
-        List<Custom_Field_History_Tracking__c> historyRecords = populateMasterRecord(masterRecord, duplicateRecords, emptyFieldsOfMasterRecord, mergeDuplicateInput.objectName, mergeDuplicateInput.masterId);
-
-        saveChanges(masterRecord, duplicateRecords, historyRecords);
+        if (mergeDuplicateInput == null) {
+            return buildResponse(null, 'Merge request cannot be null.');
+        }
         
-        return buildResponse(masterRecord.Id);
-       
+        try{
+            Set<Id> duplicateRecordIds = getDuplicateIds(mergeDuplicateInput.masterId, mergeDuplicateInput.duplicateIds);
+            
+            Map<String, Schema.SObjectField> fieldMap = getFieldMap(mergeDuplicateInput.objectName);
+            List<String> mergeableFields = getMergeableFields(fieldMap);
+            
+            SObject masterRecord = getMasterRecord(mergeDuplicateInput.objectName, mergeDuplicateInput.masterId, mergeableFields);
+            List<String> emptyFieldsOfMasterRecord = getEmptyFields(masterRecord, mergeableFields);
+            
+            List<SObject> duplicateRecords = getDuplicateRecords(mergeDuplicateInput.objectName, duplicateRecordIds, emptyFieldsOfMasterRecord);
+            
+            List<Custom_Field_History_Tracking__c> historyRecords = populateMasterRecord(masterRecord, duplicateRecords, emptyFieldsOfMasterRecord, mergeDuplicateInput.objectName, mergeDuplicateInput.masterId);
+            
+            saveChanges(masterRecord, duplicateRecords, historyRecords);
+            
+            return buildResponse(masterRecord.Id, 'Master Record Updated Successfully');
+        }catch (Exception ex) {
+            return buildResponse(mergeDuplicateInput.masterId, ex.getMessage());
+        }
     }
     
     private static Set<Id> getDuplicateIds(Id masterId, List<Id> duplicateRecordIds) { 
@@ -73,11 +85,11 @@ public class DF_MergeDuplicateRecords {
         queryFields.addAll(fields);
         
         String query = 'SELECT ' +
-                        String.join(queryFields, ',') +
-                        ' FROM ' +
-                        objectName +
-                        ' WHERE Id IN :duplicateRecordIds';
-        
+                       String.join(queryFields, ',') +
+                       ' FROM ' +
+                       objectName +
+                       ' WHERE Id IN :duplicateRecordIds';
+                    
         return Database.query(query);
     }
     
@@ -88,12 +100,11 @@ public class DF_MergeDuplicateRecords {
             Schema.DescribeFieldResult fieldDescribe = fieldMap.get(fieldName).getDescribe();
             
             if( fieldName == 'Id' || !fieldDescribe.isAccessible() || !fieldDescribe.isUpdateable() ||
-                fieldDescribe.isCalculated() || fieldDescribe.isAutoNumber() || fieldDescribe.getType() == Schema.DisplayType.Address 
+               fieldDescribe.isCalculated() || fieldDescribe.isAutoNumber() || fieldDescribe.getType() == Schema.DisplayType.Address 
                || fieldDescribe.getType() == Schema.DisplayType.Location ){
-                continue;
-            }
+                   continue;
+               }
             
-            // Skip managed package fields
             if(fieldName.endsWith('__c') && fieldName.substringBefore('__c').contains('__')){
                 continue;
             }
@@ -114,7 +125,6 @@ public class DF_MergeDuplicateRecords {
                 break; 
             }
             
-            // Create a copy of the keys to avoid ConcurrentModificationException while removing elements
             List<String> currentFieldsToCheck = new List<String>(fieldsToProcess);
             
             for (String fieldName : currentFieldsToCheck) {
@@ -140,7 +150,7 @@ public class DF_MergeDuplicateRecords {
         customFieldHistoryRecord.Old_Value__c = oldValue == null ? null : String.valueOf(oldValue);
         customFieldHistoryRecord.New_Value__c = newValue == null  ? null : String.valueOf(newValue);
         customFieldHistoryRecord.Modified_By__c = UserInfo.getUserId();
-
+        
         return customFieldHistoryRecord;
     }
     
@@ -148,7 +158,6 @@ public class DF_MergeDuplicateRecords {
         UPDATE masterRecord;
         
         if (!customFieldHistoryRecords.isEmpty()) {
-            // Dynamically switch to SYSTEM_MODE only during tests to bypass GitHub CI/CD permission blocks
             AccessLevel dmlContext = Test.isRunningTest() ? AccessLevel.SYSTEM_MODE : AccessLevel.USER_MODE;
             Database.insert(customFieldHistoryRecords, true, dmlContext);
         }
@@ -158,11 +167,11 @@ public class DF_MergeDuplicateRecords {
         }
     }
     
-    private static List<MergeDuplicateOutput> buildResponse(Id masterId) {
-        MergeDuplicateOutput mergeDuplicateOutput = new MergeDuplicateOutput();
-        mergeDuplicateOutput.masterRecordId = String.valueOf(masterId);
-        mergeDuplicateOutput.message = 'Master Record Updated Successfully';
+    private static List<MergeDuplicateOutput> buildResponse(Id masterId, String message) {
+        MergeDuplicateOutput response = new MergeDuplicateOutput();
+        response.masterRecordId = masterId != null ? String.valueOf(masterId) : null;
+        response.message = message;
         
-        return new List<MergeDuplicateOutput>{ mergeDuplicateOutput };
-    }
+        return new List<MergeDuplicateOutput>{ response };
+   }
 }
