@@ -1,39 +1,21 @@
 @IsTest
 public class DF_DeleteOldCustomFieldHistoryBatchTest {
+    
     @TestSetup
     static void setup() {
-        Profile adminProfile = [SELECT Id FROM Profile WHERE Name = 'System Administrator' LIMIT 1];
-
-        User adminUser = new User(
-            Alias = 'tadmin',
-            Email = 'testadmin@example.com',
-            EmailEncodingKey = 'UTF-8',
-            LastName = 'Admin',
-            LanguageLocaleKey = 'en_US',
-            LocaleSidKey = 'en_US',
-            ProfileId = adminProfile.Id,
-            TimeZoneSidKey = 'America/Los_Angeles',
-            Username = 'testadmin' + System.currentTimeMillis() + '@example.com'
-        );
-        INSERT adminUser;
+        Profile adminProfile = TestDataFatoryUser.getProfileByName('System Administrator');
+        User adminUser = TestDataFatoryUser.createUser(adminProfile.Id);
     }
 
     @IsTest
     static void execute_itDeletesRecords_whenRecordsAreOlderThanSevenDays() {
-        User adminUser = getAdminUser();
+        User adminUser = TestDataFatoryUser.getUserByProfileName('System Administrator');
         
         System.runAs(adminUser) {
             Account account = TestDataFactoryAccount.buildAccount('Test Account', '1111111111', 'true');
             INSERT account;
             
-            Custom_Field_History_Tracking__c oldCustomFieldHistoryRecord = new Custom_Field_History_Tracking__c(
-                Name = 'Account', 
-                Master_Record_Id__c = account.Id, 
-                Field_Name__c = 'Phone',
-                Modified_By__c = adminUser.Id
-            );
-            
-            // FIXED: Using System Mode to insert test data so the GitHub validation runner doesn't block it
+            Custom_Field_History_Tracking__c oldCustomFieldHistoryRecord = new Custom_Field_History_Tracking__c(Name = 'Account', Master_Record_Id__c = account.Id, Field_Name__c = 'Phone');
             Database.insert(oldCustomFieldHistoryRecord, true, AccessLevel.SYSTEM_MODE);
             
             Test.setCreatedDate(oldCustomFieldHistoryRecord.Id, System.now().addDays(-10));
@@ -50,20 +32,13 @@ public class DF_DeleteOldCustomFieldHistoryBatchTest {
     
     @IsTest
     static void execute_itDoesNotDeleteRecords_whenRecordsAreWithinSevenDays() {
-        User adminUser = getAdminUser();
+        User adminUser = TestDataFatoryUser.getUserByProfileName('System Administrator');
         
         System.runAs(adminUser) {
             Account account = new Account(Name = 'Test Account');
             INSERT account;
             
-            Custom_Field_History_Tracking__c recentCustomFieldHistoryRecord = new Custom_Field_History_Tracking__c(
-                Name = 'Account', 
-                Master_Record_Id__c = account.Id, 
-                Field_Name__c = 'Phone',
-                Modified_By__c = adminUser.Id
-            );
-            
-            // FIXED: Using System Mode to insert test data so the GitHub validation runner doesn't block it
+            Custom_Field_History_Tracking__c recentCustomFieldHistoryRecord = new Custom_Field_History_Tracking__c(Name = 'Account', Master_Record_Id__c = account.Id, Field_Name__c = 'Phone');
             Database.insert(recentCustomFieldHistoryRecord, true, AccessLevel.SYSTEM_MODE);
             
             Test.startTest();

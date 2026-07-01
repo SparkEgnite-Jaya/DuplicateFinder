@@ -3,44 +3,8 @@ private class DF_MergeDuplicateRecordsTest {
     
     @TestSetup
     static void createTestData() {
-        Profile adminProfile = [SELECT Id FROM Profile WHERE Name = 'System Administrator' LIMIT 1];
-        
-        User adminUser = new User(
-            Alias = 'tadmin',
-            Email = 'testadmin@example.com',
-            EmailEncodingKey = 'UTF-8',
-            LastName = 'Admin',
-            LanguageLocaleKey = 'en_US',
-            LocaleSidKey = 'en_US',
-            ProfileId = adminProfile.Id,
-            TimeZoneSidKey = 'America/Los_Angeles',
-            Username = 'testadmin' + System.currentTimeMillis() + '@example.com'
-        );
-        
-        INSERT adminUser;
-        
-        PermissionSet ps = new PermissionSet(
-            Label = 'CI_Batch_Test_Access', 
-            Name = 'CI_Batch_Test_Access'
-        );
-        INSERT ps;
-        
-        ObjectPermissions op = new ObjectPermissions(
-            ParentId = ps.Id,
-            SobjectType = 'Custom_Field_History_Tracking__c',
-            PermissionsRead = true,
-            PermissionsCreate = true,
-            PermissionsEdit = true,
-            PermissionsDelete = true
-        );
-        INSERT op;
-        
-        // Assign it to our test admin user
-        PermissionSetAssignment psa = new PermissionSetAssignment(
-            AssigneeId = adminUser.Id,
-            PermissionSetId = ps.Id
-        );
-        INSERT psa;
+        Profile adminProfile = TestDataFatoryUser.getProfileByName('System Administrator');
+        User adminUser = TestDataFatoryUser.createUser(adminProfile.Id);
         
         System.runAs(adminUser) {
             INSERT new List<Account>{
@@ -53,7 +17,7 @@ private class DF_MergeDuplicateRecordsTest {
     
     @IsTest
     static void mergeDuplicates_itUpdatesMasterRecord_whenDuplicateContainsValues() {
-        User adminUser = getAdminUser();
+        User adminUser = TestDataFatoryUser.getUserByProfileName('System Administrator');
         
         System.runAs(adminUser) {
             List<Account> accounts = TestDataFactoryAccount.getAll();
@@ -67,7 +31,7 @@ private class DF_MergeDuplicateRecordsTest {
             mergeDuplicateInput.masterId = masterAccount.Id;
             mergeDuplicateInput.duplicateIds = new List<Id>{firstDuplicateRecord.Id, secondDuplicateRecord.Id};
                 
-                Test.startTest();
+            Test.startTest();
             List<DF_MergeDuplicateRecords.MergeDuplicateOutput> mergeDuplicateOutput = DF_MergeDuplicateRecords.mergeDuplicates(new List<DF_MergeDuplicateRecords.MergeDuplicateInput>{mergeDuplicateInput});
             Test.stopTest();
             
@@ -83,7 +47,7 @@ private class DF_MergeDuplicateRecordsTest {
     
     @IsTest
     static void mergeDuplicates_itCreatesHistoryRecords_whenMasterFieldsAreUpdated() {
-        User adminUser = getAdminUser();
+        User adminUser = TestDataFatoryUser.getUserByProfileName('System Administrator');
         
         System.runAs(adminUser) {
             List<Account> masterAccounts =  TestDataFactoryAccount.getAccountByName('Master Account');
@@ -94,7 +58,7 @@ private class DF_MergeDuplicateRecordsTest {
             mergeDuplicateInput.masterId = masterAccounts[0].Id;
             mergeDuplicateInput.duplicateIds = new List<Id>{duplicateRecords[0].Id, duplicateRecords[1].Id};
                 
-                Test.startTest();
+            Test.startTest();
             DF_MergeDuplicateRecords.mergeDuplicates(new List<DF_MergeDuplicateRecords.MergeDuplicateInput>{mergeDuplicateInput});
             Test.stopTest();
             
@@ -106,7 +70,7 @@ private class DF_MergeDuplicateRecordsTest {
     
     @IsTest
     static void mergeDuplicates_itDeletesDuplicateRecords_whenMergeCompletesSuccessfully() {
-        User adminUser = getAdminUser();
+        User adminUser = TestDataFatoryUser.getUserByProfileName('System Administrator');
         
         System.runAs(adminUser) {
             List<Account> masterAccounts =  TestDataFactoryAccount.getAccountByName('Master Account');
@@ -117,7 +81,7 @@ private class DF_MergeDuplicateRecordsTest {
             mergeDuplicateInput.masterId = masterAccounts[0].Id;
             mergeDuplicateInput.duplicateIds = new List<Id>{duplicateRecords[0].Id, duplicateRecords[1].Id};
                 
-                Test.startTest();
+            Test.startTest();
             DF_MergeDuplicateRecords.mergeDuplicates(new List<DF_MergeDuplicateRecords.MergeDuplicateInput>{mergeDuplicateInput});
             Test.stopTest();
             
@@ -129,7 +93,7 @@ private class DF_MergeDuplicateRecordsTest {
     
     @IsTest
     static void mergeDuplicates_itIgnoresMasterId_whenMasterIdExistsInDuplicateIds() {
-        User adminUser = getAdminUser();
+        User adminUser = TestDataFatoryUser.getUserByProfileName('System Administrator');
         
         System.runAs(adminUser) {
             List<Account> accounts = TestDataFactoryAccount.getAll();
@@ -142,7 +106,7 @@ private class DF_MergeDuplicateRecordsTest {
             mergeDuplicateInput.masterId = masterAccount.Id;
             mergeDuplicateInput.duplicateIds = new List<Id>{masterAccount.Id, duplicateAccount.Id};
                 
-                Test.startTest();
+            Test.startTest();
             List<DF_MergeDuplicateRecords.MergeDuplicateOutput> mergeDuplicateOutput = DF_MergeDuplicateRecords.mergeDuplicates(new List<DF_MergeDuplicateRecords.MergeDuplicateInput>{mergeDuplicateInput});
             Test.stopTest();
             
@@ -153,21 +117,21 @@ private class DF_MergeDuplicateRecordsTest {
     
     @IsTest
     static void mergeDuplicates_itDoesNotCreateHistoryRecords_whenMasterAlreadyContainsValues() {
-        User adminUser = getAdminUser();
+        User adminUser = TestDataFatoryUser.getUserByProfileName('System Administrator');
         
         System.runAs(adminUser) {
             List<Account> accounts = new List<Account>{
                 TestDataFactoryAccount.buildAccount('Filled Master', '1111111111', null, 'www.master.com'),
-                    TestDataFactoryAccount.buildAccount('Filled Duplicate', '2222222222', null, 'www.duplicate.com')
-                    };
-                        INSERT accounts;
+                TestDataFactoryAccount.buildAccount('Filled Duplicate', '2222222222', null, 'www.duplicate.com')
+            };
+            INSERT accounts;
             
             DF_MergeDuplicateRecords.MergeDuplicateInput mergeDuplicateInput = new DF_MergeDuplicateRecords.MergeDuplicateInput();
             mergeDuplicateInput.objectName = 'Account';
             mergeDuplicateInput.masterId = accounts[0].Id;
             mergeDuplicateInput.duplicateIds = new List<Id>{accounts[1].Id};
                 
-                Test.startTest();
+            Test.startTest();
             DF_MergeDuplicateRecords.mergeDuplicates(new List<DF_MergeDuplicateRecords.MergeDuplicateInput>{mergeDuplicateInput});
             Test.stopTest();
             
@@ -194,11 +158,5 @@ private class DF_MergeDuplicateRecordsTest {
                 FROM Account 
                 WHERE Id IN : duplicateRecordIds];
     }
-    
-    private static User getAdminUser() {
-        return [SELECT Id
-                FROM User
-                WHERE Alias = 'tadmin'
-                LIMIT 1];
-    }
+   
 }

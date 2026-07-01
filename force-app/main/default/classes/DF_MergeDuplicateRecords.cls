@@ -153,10 +153,6 @@ public class DF_MergeDuplicateRecords {
             Database.insert(customFieldHistoryRecords, true, dmlContext);
         }
         
-        /*if(!customFieldHistoryRecords.isEmpty()) {
-            INSERT customFieldHistoryRecords;
-        }*/
-        
         if(!duplicateRecords.isEmpty()) {
             DELETE duplicateRecords;
         }
