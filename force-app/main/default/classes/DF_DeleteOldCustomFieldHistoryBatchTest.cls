@@ -3,13 +3,13 @@ public class DF_DeleteOldCustomFieldHistoryBatchTest {
     
     @TestSetup
     static void setup() {
-        Profile adminProfile = TestDataFatoryUser.getProfileByName('System Administrator');
-        User adminUser = TestDataFatoryUser.createUser(adminProfile.Id);
+        Profile adminProfile = TestDataFactoryUser.getProfileByName('System Administrator');
+        User adminUser = TestDataFactoryUser.createUser(adminProfile.Id);
     }
 
     @IsTest
     static void execute_itDeletesRecords_whenRecordsAreOlderThanSevenDays() {
-        User adminUser = TestDataFatoryUser.getUserByProfileName('System Administrator');
+        User adminUser = TestDataFactoryUser.getUserByProfileName('System Administrator');
         
         System.runAs(adminUser) {
             Account account = TestDataFactoryAccount.buildAccount('Test Account', '1111111111', 'true');
@@ -32,7 +32,7 @@ public class DF_DeleteOldCustomFieldHistoryBatchTest {
     
     @IsTest
     static void execute_itDoesNotDeleteRecords_whenRecordsAreWithinSevenDays() {
-        User adminUser = TestDataFatoryUser.getUserByProfileName('System Administrator');
+        User adminUser = TestDataFactoryUser.getUserByProfileName('System Administrator');
         
         System.runAs(adminUser) {
             Account account = new Account(Name = 'Test Account');
