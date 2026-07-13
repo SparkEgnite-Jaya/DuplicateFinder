@@ -1,8 +1,10 @@
-import { LightningElement, track } from 'lwc';
+import { LightningElement, track , wire } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
-export default class DuplicateFinderWizardSetup extends LightningElement {
-    @track currentStep = '1';
+import { NavigationMixin,CurrentPageReference  } from "lightning/navigation";
+
+export default class DuplicateFinderWizardSetup extends NavigationMixin(LightningElement) {
+    @track currentStep = '1';  // 1
 
     // Getter flags to dynamically show/hide content blocks smoothly
     get isStep1() { return this.currentStep === '1'; }
@@ -16,8 +18,11 @@ export default class DuplicateFinderWizardSetup extends LightningElement {
     }
 
     handleBack() {
+        console.log('inside Back :: ');
         let prevValue = parseInt(this.currentStep, 10) - 1;
+        console.log('prevValue :: ', prevValue);
         this.currentStep = prevValue.toString();
+        console.log('currentStep :: ', this.currentStep);
     }
 
     handleSaveAndNext() {
@@ -32,7 +37,24 @@ export default class DuplicateFinderWizardSetup extends LightningElement {
         this.showToast('Batch Started', 'The maintenance engine processing thread has begun execution.', 'info');
     }
 
+    handleFinish() {
+        this.showToast('Setup Complete', 'You have completed the setup wizard.', 'success');
+        
+        this.navigateToMainApp();
+    }
+
     showToast(title, message, variant) {
         this.dispatchEvent(new ShowToastEvent({ title, message, variant }));
     }
+
+    navigateToMainApp() {
+        // Replace 'c__MyCustomApp' with your actual Custom App's Developer Name
+        this[NavigationMixin.Navigate]({
+            type: 'standard__app',
+            attributes: {
+                appTarget: 'c__DuplicateFinder'
+            }
+        });
+    }
+
 }

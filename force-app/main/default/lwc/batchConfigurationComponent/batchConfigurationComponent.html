@@ -1,0 +1,64 @@
+<template>
+    <lightning-card title="Weekly Cleanup Batch Configuration" icon-name="utility:settings">
+
+        <div class="container">
+
+            <template if:true={isLoading}>
+                <div class="spinner-container"></div>
+                    <lightning-spinner alternative-text="Loading"></lightning-spinner>
+                </div>
+            </template>
+
+            <template if:false={isLoading}>
+                <p class="intro">
+                Schedule the cleanup job to automatically delete Custom Field History records older than one week.
+                </p>
+
+                <div class="step-card">
+
+                    <h2>Weekly Cleanup Job</h2>
+
+                    <p>
+                    The cleanup job:
+                    </p>
+
+                    <ol>
+                        <li>Runs every Monday at 10:00 AM.</li>
+                        <li>Deletes records older than one week.</li>
+                        <li>Runs automatically in the background.</li>
+                        <li>No administrator intervention is required.</li>
+                        <li>Click <strong>Start Batch</strong> to schedule the weekly cleanup job.</li>
+                    </ol>
+
+                <!--  <div class="status"> -->
+                        <lightning-button 
+                        variant="brand" 
+                        label="Start Batch" 
+                        icon-name="utility:play"
+                        onclick={handleSchedule}
+                        disabled={isButtonDisabled}>
+                        </lightning-button>
+                <!--  </div> -->
+
+                </div>
+
+                <div class="footer">
+
+                    <lightning-button
+                        label="Previous"
+                        onclick={handlePrevious}>
+                    </lightning-button>
+
+                    <lightning-button
+                        variant="brand"
+                        label="Finish"
+                        disabled={disableNext}
+                        onclick={handleFinish}>
+                    </lightning-button>
+
+                </div>
+            </template>
+        </div>
+
+    </lightning-card>
+</template>
