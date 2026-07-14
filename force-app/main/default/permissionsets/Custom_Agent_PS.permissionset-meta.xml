@@ -4,6 +4,10 @@
         <agentName>Duplicate_Finder_Employee_Agent</agentName>
         <enabled>true</enabled>
     </agentAccesses>
+    <applicationVisibilities>
+        <application>DuplicateFinder</application>
+        <visible>true</visible>
+    </applicationVisibilities>
     <classAccesses>
         <apexClass>DF_FieldValidator</apexClass>
         <enabled>true</enabled>
