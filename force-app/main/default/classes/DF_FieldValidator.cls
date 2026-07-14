@@ -30,7 +30,7 @@ public class DF_FieldValidator {
         FieldValidatorOutputWrapper fieldValidatorOutputWrapper = initializeOutput();
         
         try {
-            List<String> configuredFields = getConfiguredFields(fieldValidatorInputWrapper.entityType);
+            List<String> configuredFields = getConfiguredDuplicateFields(fieldValidatorInputWrapper.entityType);
             
             if(configuredFields.isEmpty()) {
                 fieldValidatorOutputWrapper.success = false;
@@ -48,7 +48,7 @@ public class DF_FieldValidator {
         return fieldValidatorOutputWrapper;
     }
     
-    private static List<String> getConfiguredFields(String objectName) {
+    private static List<String> getConfiguredDuplicateFields(String objectName) {
         if(Test.isRunningTest() && testDataFields != null) {
             return testDataFields;
         }

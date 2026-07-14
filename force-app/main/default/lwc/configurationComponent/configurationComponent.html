@@ -1,0 +1,101 @@
+<template>
+    <lightning-card title="Configure Duplicate Finder" icon-name="utility:check">
+
+        <div class="container">
+            <template if:true={isLoading}>
+                <div class="spinner-container"></div>
+                    <lightning-spinner alternative-text="Loading"></lightning-spinner>
+                </div>
+            </template>
+
+            <template if:false={isLoading}>
+
+                <p class="intro">
+                    Complete the following configuration before running your first duplicate scan.
+                </p>
+
+                <!-- Custom Metadata Setting -->
+                <div class="step-card">
+
+                    <h2>Custom Metadata Configuration</h2>
+
+                    <p>
+                        Create a configuration record for each object that you want Duplicate Finder to scan.
+                    </p>
+
+                    <ol> 
+                        <li>Go to <strong>Setup</strong>.</li>
+                        <li>Open <strong> Custom Metadata Types</strong>.</li>
+                        <li>Select <strong> Duplicate Finder Configuration</strong>.</li>
+                        <li>Click <strong> Manage Records</strong>.</li>
+                        <li>New</li>
+                        <li>Configure the required values</li>
+                        <li>Save</li>
+                    </ol>
+
+                    <div class="status">
+
+                        <lightning-icon
+                            icon-name={metadataIcon}
+                            class={metadataIconClass}
+                            size="small">
+                        </lightning-icon>
+
+                        <span>{metadataStatus}</span>
+
+                    </div>
+
+                </div>
+
+                <!-- Custom Setting  -->
+                <div class="step-card">
+
+                    <h2>Custom Setting Configuration</h2>
+
+                    <p>
+                        Configure maximum number of duplicate records to display in the search results.
+                    </p>
+
+                    <ol> 
+                        <li>Go to <strong>Setup</strong>.</li>
+                        <li>Open <strong> Custom Settings</strong>.</li>
+                        <li>Select <strong> Duplicate Finder Setting</strong>.</li>
+                        <li>Click <strong> Manage</strong>.</li>
+                        <li>Edit</li>
+                        <li>Configure Record Limit Field </li>
+                        <li>Save</li>
+                    </ol>
+
+                    <div class="status">
+                    <lightning-icon
+                            icon-name={recordLimitIcon}
+                            class={recordLimitIconClass}
+                            size="small">
+                        </lightning-icon>
+
+                        <span>{recordLimitStatus}</span>
+
+                    </div>
+
+                </div>
+
+                <div class="footer">
+
+                    <lightning-button
+                        label="Previous"
+                        onclick={handlePrevious}>
+                    </lightning-button>
+
+                    <lightning-button
+                        variant="brand"
+                        label="Next"
+                        disabled={disableNext}
+                        onclick={handleNext}>
+                    </lightning-button>
+
+                </div>
+            </template>        
+        </div>
+
+    </lightning-card>
+</template>

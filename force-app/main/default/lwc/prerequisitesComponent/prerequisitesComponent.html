@@ -1,0 +1,92 @@
+<template>
+    <lightning-card title="Prerequisites" icon-name="utility:check">
+
+        <div class="container">
+
+            <template if:true={isLoading}>
+                <div class="spinner-container"></div>
+                    <lightning-spinner alternative-text="Loading"></lightning-spinner>
+                </div>
+            </template>
+
+            <template if:false={isLoading}>
+                <p class="intro">
+                    Before you can start using <strong> Duplicate Finder </strong>,
+                    complete the following one-time administrator tasks.
+                </p>
+
+                <!-- Permission Set -->
+                <div class="step-card">
+
+                    <h2>Assign Permission Set</h2>
+
+                    <p>
+                        Assign the
+                        <strong> Duplicate Finder User </strong>
+                        permission set to every user who will use this application.
+                    </p>
+
+                    <ol>
+                        <li>Go to <strong>Setup</strong>.</li>
+                        <li>Open <strong>Permission Sets</strong>.</li>
+                        <li>Select <strong>Duplicate Finder User</strong>.</li>
+                        <li>Click <strong>Manage Assignments</strong>.</li>
+                        <li>Assign the required users.</li>
+                    </ol>
+
+                    <lightning-input
+                        type="checkbox"
+                        label="I have completed this step."
+                        checked={permissionDone}
+                        onchange={handlePermission}>
+                    </lightning-input>
+
+                </div>
+
+                <!-- Agent -->
+                <div class="step-card">
+
+                    <h2>Activate Agent</h2>
+
+                    <p>
+                        Activate the Duplicate Finder Agent before running
+                        duplicate scans.
+                    </p>
+
+                    <ol>
+                        <li>Go to <strong>Setup</strong>.</li>
+                        <li>Open <strong>Agentforce Agents</strong>.</li>
+                        <li>Select <strong>Duplicate Finder Agent</strong>.</li>
+                        <li>Click <strong>Activate</strong>.</li>
+                    </ol>
+
+                    <lightning-input
+                        type="checkbox"
+                        label="I have completed this step."
+                        checked={agentDone}
+                        onchange={handleAgent}>
+                    </lightning-input>
+
+                </div>
+
+                <div class="footer">
+
+                    <lightning-button
+                        label="Previous"
+                        onclick={handlePrevious}>
+                    </lightning-button>
+
+                    <lightning-button
+                        variant="brand"
+                        label="Next"
+                        disabled={disableNext}
+                        onclick={handleNext}>
+                    </lightning-button>
+
+                </div>
+
+            </template>
+
+        </div>
+    </lightning-card>
+</template>

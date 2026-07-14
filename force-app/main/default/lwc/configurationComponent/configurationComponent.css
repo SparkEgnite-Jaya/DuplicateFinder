@@ -1,0 +1,64 @@
+.container {
+    padding: 1.5rem;
+}
+
+.intro {
+    margin-bottom: 2rem;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.step-card {
+    border: 1px solid #dddbda;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    background: #fafaf9;
+}
+
+.step-card h2 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.step-card p {
+    margin-bottom: 1rem;
+}
+
+.step-card ol {
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.step-card li {
+    margin-bottom: 0.5rem;
+}
+
+.status {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-weight: 600;
+}
+
+.footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+}
+
+.spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px; 
+}
+
+.status-button-blue {
+    --slds-c-icon-color-foreground-default: #066afe;
+}
+
+.status-button-red {
+    --slds-c-icon-color-foreground-default: #BA0517;
+}
