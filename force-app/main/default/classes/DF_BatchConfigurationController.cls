@@ -1,21 +1,14 @@
 public class DF_BatchConfigurationController {
+    
     @TestVisible
     private static String JOB_NAME = 'Duplicate Finder Weekly Cleanup';
     private static String CRON_EXPRESSION = '0 0 10 ? * MON';
 
     public class ScheduleStatusWrapper {
-
-        @AuraEnabled
-        public Boolean isScheduled;
-
-        @AuraEnabled
-        public String status;
-
-        @AuraEnabled
-        public String jobId;
-
-        @AuraEnabled
-        public Datetime nextFireTime;
+        @AuraEnabled public Boolean isScheduled;
+        @AuraEnabled public String status;
+        @AuraEnabled public String jobId;
+        @AuraEnabled public Datetime nextFireTime;
     }
 
     @AuraEnabled(cacheable=true)
@@ -23,17 +16,13 @@ public class DF_BatchConfigurationController {
 
         ScheduleStatusWrapper response = new ScheduleStatusWrapper();
 
-        List<CronTrigger> jobs = [
-            SELECT Id,
-                   State,
-                   NextFireTime
-            FROM CronTrigger
-            WHERE CronJobDetail.Name = :JOB_NAME
-            AND State IN ('WAITING', 'ACQUIRED')
-            LIMIT 1
-        ];
+        List<CronTrigger> jobs = [SELECT Id,State,NextFireTime
+                                  FROM CronTrigger
+                                  WHERE CronJobDetail.Name = :JOB_NAME
+                                  AND State IN ('WAITING', 'ACQUIRED')
+                                  LIMIT 1];
 
-        if (jobs.isEmpty()) {
+        if(jobs.isEmpty()){
             response.isScheduled = false;
             response.status = 'Not Scheduled';
             return response;
@@ -55,26 +44,19 @@ public class DF_BatchConfigurationController {
         ScheduleStatusWrapper response = getScheduleStatus();
 
         // Prevent duplicate schedules
-        if (response.isScheduled) {
+        if(response.isScheduled) {
             return response;
         }
-
-        System.schedule(
-            JOB_NAME,
-            CRON_EXPRESSION,
-            new DF_DeleteOldCustomFieldHistorySchedular()
-        );
-
+		
+        try {
+            System.schedule(JOB_NAME, CRON_EXPRESSION,new DF_DeleteOldCustomFieldHistorySchedular());
+        } catch(Exception ex) {
+            response.isScheduled = false;
+            response.status = 'An unexpected error occurred while scheduling the weekly cleanup job.';
+            return response;
+        }
+        
         return getScheduleStatus();
     }
-
-  /*  @AuraEnabled
-    public static void removeWeeklyCleanupSchedule() {
-
-        ScheduleStatusWrapper response = getScheduleStatus();
-
-        if (response.isScheduled && response.jobId != null) {
-            System.abortJob(response.jobId);
-        }
-    }*/
+    
 }

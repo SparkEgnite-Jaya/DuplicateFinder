@@ -12,19 +12,20 @@ export default class PrerequisitesComponent extends LightningElement {
     }
 
     connectedCallback() {
-        this.loadStatus();
+        this.loadPrerequisiteStatus();
     }
 
-    loadStatus() {
+    loadPrerequisiteStatus() {
         this.isLoading = true;
 
         getPrerequisitesStepStatus()
             .then(result => {
+                console.log('result', result);
                 this.permissionDone = result.isPermissionSetAssigned;
                 this.agentDone = result.isAgentActive;
             })
             .catch(error => {
-                console.error(error);
+                this.showToast('Error', error.body?.message || 'An error occurred.', 'error');
             })
             .finally(() => {
                 this.isLoading = false;
@@ -39,20 +40,7 @@ export default class PrerequisitesComponent extends LightningElement {
         this.dispatchEvent(new CustomEvent('next'));
     }
 
-   /* get hidePermissionCheckbox(){
-        return this.permissionDone ? true : false;
+    showToast(title, message, variant) {
+        this.dispatchEvent(new ShowToastEvent({ title, message, variant }));
     }
-
-    get hideAgentCheckbox(){
-        return this.agentDone ? 'hide-checkbox' : '';
-    }
-
-    get permissionClass(){
-        return this.permissionDone ? 'status-blue' : '';
-    }
-
-    get agentClass(){
-        return this.agentDone ? 'status-blue' : '';
-    }*/
-
 }

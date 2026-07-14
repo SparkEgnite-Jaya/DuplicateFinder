@@ -1,44 +1,31 @@
 public class DF_ConfigurationController {
-      public class ConfigurationStatus {
-
-        @AuraEnabled
-        public Boolean isCustomMetadataConfigured;
-
-        @AuraEnabled
-        public Boolean isRecordLimitConfigured;
-
-        @AuraEnabled
-        public Integer recordLimit;
-
-        @AuraEnabled
-        public Boolean isReady;
+    
+    public class ConfigurationStatus {
+        @AuraEnabled public Boolean isCustomMetadataConfigured;
+        @AuraEnabled public Boolean isRecordLimitConfigured;
+        @AuraEnabled public Integer recordLimit;
+        @AuraEnabled public Boolean isReady;
     }
 
     @AuraEnabled(cacheable=true)
     public static ConfigurationStatus getConfigurationStatus() {
-
         ConfigurationStatus status = new ConfigurationStatus();
 
         // Check Custom Metadata
-        status.isCustomMetadataConfigured =
-            [SELECT Count()
-             FROM DF_Duplicate_Field_Config__mdt] > 0;
+        status.isCustomMetadataConfigured = [SELECT Count() FROM DF_Duplicate_Field_Config__mdt] > 0;
 
         // Check Custom Setting
-        Duplicate_Finder_Setting__c setting =
-            Duplicate_Finder_Setting__c.getOrgDefaults();
+        Duplicate_Finder_Setting__c setting = Duplicate_Finder_Setting__c.getOrgDefaults();
 
         if(setting != null && setting.Record_Limit__c != null){
             status.isRecordLimitConfigured = true;
             status.recordLimit = Integer.valueOf(setting.Record_Limit__c);
-        } else {
+        }else {
             status.isRecordLimitConfigured = false;
         }
 
-        status.isReady =
-            status.isCustomMetadataConfigured &&
-            status.isRecordLimitConfigured;
-
+        status.isReady = status.isCustomMetadataConfigured && status.isRecordLimitConfigured;
         return status;
     }
+    
 }

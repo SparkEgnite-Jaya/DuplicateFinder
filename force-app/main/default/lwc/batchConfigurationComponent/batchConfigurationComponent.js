@@ -2,10 +2,9 @@ import { LightningElement, track, wire } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import getScheduleStatus from '@salesforce/apex/DF_BatchConfigurationController.getScheduleStatus';
 import scheduleWeeklyCleanup from '@salesforce/apex/DF_BatchConfigurationController.scheduleWeeklyCleanup';
-//c/duplicateFinderWizardSetupimport removeWeeklyCleanupSchedule from '@salesforce/apex/DF_BatchConfigurationController.removeWeeklyCleanupSchedule';
 
 export default class BatchConfigurationComponent extends LightningElement {
-    @track isButtonDisabled = false;
+    isButtonDisabled = false;
     isLoading = true;
 
     connectedCallback() {
@@ -19,7 +18,6 @@ export default class BatchConfigurationComponent extends LightningElement {
                 this.scheduleStatus = updatedStatus;
                 this.showToast('Success', 'Weekly cleanup job scheduled successfully.', 'success');
                 this.isButtonDisabled = true;
-                //return refreshApex(this.wiredStatusResult); // clear cache
             })
             .catch((error) => {
                 this.showToast('Error', error.body?.message || 'An error occurred.', 'error');
@@ -36,30 +34,12 @@ export default class BatchConfigurationComponent extends LightningElement {
                 this.isButtonDisabled = result.isScheduled;
             })
             .catch(error => {
-                console.error(error);
-            })
-            .finally(() => {
-                this.isLoading = false;
-            });
-    }
-
-    // Call apex to abort/remove the job
-  /*  handleRemoveSchedule() {
-        this.isLoading = true;
-        removeWeeklyCleanupSchedule()
-            .then(() => {
-                this.showToast('Removed', 'Weekly cleanup job schedule has been removed.', 'info');
-                // Manually reset state since removeWeeklyCleanupSchedule returns void
-                this.scheduleStatus = { isScheduled: false, status: 'Not Scheduled', nextFireTime: null };
-                return refreshApex(this.wiredStatusResult); // clear cache
-            })
-            .catch((error) => {
                 this.showToast('Error', error.body?.message || 'An error occurred.', 'error');
             })
             .finally(() => {
                 this.isLoading = false;
             });
-    } */
+    }
 
     showToast(title, message, variant) {
         this.dispatchEvent(new ShowToastEvent({ title, message, variant }));

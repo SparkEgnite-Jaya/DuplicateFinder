@@ -1,68 +1,3 @@
-/*.container {
-    padding: 1.5rem;
-}
-
-.intro {
-    margin-bottom: 1.5rem;
-}
-
-.config-card {
-    border: 1px solid #dddbda;
-    border-radius: .5rem;
-    padding: 1rem;
-    margin-bottom: 1rem;
-    background: #fafaf9;
-}
- cfx
-.config-card h2 {
-    font-size: 1rem;
-    font-weight: 700;
-    margin-bottom: .75rem;
-}
-
-.path {
-    background: #f3f3f3;
-    padding: .75rem;
-    border-radius: .25rem;
-    font-family: monospace;
-    margin: 1rem 0;
-}
-
-.status {
-    display: flex;
-    align-items: center;
-    gap: .5rem;
-    font-weight: 600;
-}
-
-.overall {
-    display: flex;
-    align-items: center;
-    gap: .5rem;
-    padding: 1rem;
-    background: #eef4ff;
-    border-radius: .5rem;
-    margin-top: 1rem;
-}
-
-.footer {
-    margin-top: 2rem;
-    display: flex;
-    justify-content: space-between;
-}
-
-.success {
-    --slds-c-icon-color-foreground: #2e844a;
-}
-
-.error {
-    --slds-c-icon-color-foreground: #ba0517;
-}
-
-.warning {
-    --slds-c-icon-color-foreground: #fe9339;
-} */
-
 .container {
     padding: 1.5rem;
 }
@@ -120,10 +55,10 @@
     min-height: 300px; 
 }
 
-.status-blue {
+.status-button-blue {
     --slds-c-icon-color-foreground-default: #066afe;
 }
 
-.status-red {
+.status-button-red {
     --slds-c-icon-color-foreground-default: #BA0517;
 }

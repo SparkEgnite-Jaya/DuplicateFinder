@@ -3,7 +3,7 @@ import getConfigurationStatus from '@salesforce/apex/DF_ConfigurationController.
 
 export default class ConfigurationComponent extends LightningElement {
 
-    @track status;
+    status;
     isLoading = true;
 
     connectedCallback() {
@@ -15,10 +15,9 @@ export default class ConfigurationComponent extends LightningElement {
         getConfigurationStatus()
             .then(result => {
                 this.status = result;
-                console.log('Configuration Status: ', this.status);
             })
             .catch(error => {
-                console.error(error);
+                this.showToast('Error', error.body?.message || 'An error occurred.', 'error');
             }).finally(() => {
                 this.isLoading = false;
             });
@@ -41,27 +40,27 @@ export default class ConfigurationComponent extends LightningElement {
 
 
     get metadataIcon() {
-        return this.status?.isCustomMetadataConfigured
-            ? 'utility:success'
-            : 'utility:error';
+        return this.getStatusIcon(this.status?.isCustomMetadataConfigured);
     }
 
     get recordLimitIcon() {
-        return this.status?.isRecordLimitConfigured
-            ? 'utility:success'
-            : 'utility:error';
+        return this.getStatusIcon(this.status?.isRecordLimitConfigured);
     }
 
-    get recordLimitIconClass() {
-        return this.status?.isRecordLimitConfigured 
-            ? 'status-blue' // Applies blue to both icon and text
-            : 'status-red';
+    getStatusIcon(isConfigured) {
+        return isConfigured ? 'utility:success' : 'utility:error';
     }
 
     get metadataIconClass() {
-        return this.status?.isCustomMetadataConfigured 
-            ? 'status-blue' // Applies blue to both icon and text
-            : 'status-red';
+        return this.getIconClass(this.status?.isCustomMetadataConfigured);
+    }
+
+    get recordLimitIconClass() {
+        return this.getIconClass(this.status?.isRecordLimitConfigured);
+    }
+
+    getIconClass(isConfigured) {
+        return isConfigured ? 'status-button-blue' : 'status-button-red';
     }
 
     get disableNext() {
@@ -74,6 +73,10 @@ export default class ConfigurationComponent extends LightningElement {
 
     handleNext() {
         this.dispatchEvent(new CustomEvent('next'));
+    }
+
+    showToast(title, message, variant) {
+            this.dispatchEvent(new ShowToastEvent({ title, message, variant }));
     }
 
 }

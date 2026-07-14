@@ -8,7 +8,6 @@ public class DF_BatchConfigurationControllerTest {
         DF_BatchConfigurationController.JOB_NAME = 'Duplicate Finder Weekly Cleanup Test';
 
         DF_BatchConfigurationController.ScheduleStatusWrapper status = DF_BatchConfigurationController.getScheduleStatus();
-        System.debug('status :: ' + status);
         Assert.isFalse(status.isScheduled, 'Job should not be scheduled.');
         Assert.areEqual('Not Scheduled', status.status, 'Status should be Not Scheduled.');
 

@@ -45,5 +45,5 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 300px; /* Adjust based on your page */
+    min-height: 300px;
 }
