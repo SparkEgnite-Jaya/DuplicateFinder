@@ -5,10 +5,10 @@ private class PrerequisitesComponentControllerTest {
     static void testGetPrerequisitesStepStatus_returnsStepStatus_whenInvoked() {
         
         Test.startTest();
-        Map<String, Boolean> result = PrerequisitesComponentController.getPrerequisitesStepStatus();
+        PrerequisitesComponentController.PrerequisitesStatusWrapper result = PrerequisitesComponentController.getPrerequisitesStepStatus();
         Test.stopTest();
         
-        Assert.isTrue(result.containsKey('isAgentActive'));
-        Assert.isTrue(result.containsKey('isPermissionSetAssigned'));
+        Assert.isTrue(result.isAgentActive);
+        Assert.isTrue(result.isPermissionSetAssigned);
     }
 }
