@@ -11,10 +11,7 @@ public class DF_ConfigurationController {
     public static ConfigurationStatus getConfigurationStatus() {
         ConfigurationStatus status = new ConfigurationStatus();
 
-        // Check Custom Metadata
         status.isCustomMetadataConfigured = [SELECT Count() FROM DF_Duplicate_Field_Config__mdt] > 0;
-
-        // Check Custom Setting
         Duplicate_Finder_Setting__c setting = Duplicate_Finder_Setting__c.getOrgDefaults();
 
         if(setting != null && setting.Record_Limit__c != null){

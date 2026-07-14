@@ -43,7 +43,6 @@ public class DF_BatchConfigurationController {
 
         ScheduleStatusWrapper response = getScheduleStatus();
 
-        // Prevent duplicate schedules
         if(response.isScheduled) {
             return response;
         }
