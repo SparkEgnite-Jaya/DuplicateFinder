@@ -10,9 +10,25 @@
 
             <template if:false={isLoading}>
 
-                <p class="intro">
+             <!--   <p class="intro">
                     Complete the following configuration before running your first duplicate scan.
-                </p>
+                </p> -->
+
+                 <div class="intro-section slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                    <p class="intro">
+                       Complete the following configuration before running your first duplicate scan.
+                    </p>
+
+                    <lightning-button-icon
+                        icon-name="utility:refresh"
+                        alternative-text="Refresh"
+                        title="Refresh Status"
+                        onclick={handleRefresh}
+                        variant="border-filled"
+                        class="refresh-btn"
+                        disabled={isLoading}>
+                    </lightning-button-icon>
+                </div>
 
                 <!-- Custom Metadata Setting -->
                 <div class="step-card">

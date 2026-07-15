@@ -23,6 +23,10 @@ export default class ConfigurationComponent extends LightningElement {
             });
     }
 
+    handleRefresh() {
+        this.loadStatus();
+    }
+
     get metadataStatus() {
         return this.status?.isCustomMetadataConfigured
             ? 'Configured'

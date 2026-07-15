@@ -4,42 +4,61 @@ import getScheduleStatus from '@salesforce/apex/DF_BatchConfigurationController.
 import scheduleWeeklyCleanup from '@salesforce/apex/DF_BatchConfigurationController.scheduleWeeklyCleanup';
 
 export default class BatchConfigurationComponent extends LightningElement {
-    isButtonDisabled = false;
+    scheduleStatus;
     isLoading = true;
+
+    get isButtonDisabled() {
+        return this.scheduleStatus?.isScheduled;
+    }
 
     connectedCallback() {
         this.getBatchStatus();
     }
   
     handleSchedule() {
-        this.isLoading = true;
-        scheduleWeeklyCleanup()
-            .then((updatedStatus) => {
-                this.scheduleStatus = updatedStatus;
-                this.showToast('Success', 'Weekly cleanup job scheduled successfully.', 'success');
-                this.isButtonDisabled = true;
-            })
-            .catch((error) => {
-                this.showToast('Error', error.body?.message || 'An error occurred.', 'error');
-            })
-            .finally(() => {
-                this.isLoading = false;
-            });
+    this.isLoading = true;
+
+    scheduleWeeklyCleanup()
+        .then((result) => {
+            this.scheduleStatus = result;
+             console.log('scheduleWeeklyCleanup  Status:', result);
+           // this.isButtonDisabled = result.isScheduled;
+
+            if (result.isScheduled) {
+                this.showToast('Success', result.message, 'success');
+            } else {
+                this.showToast('Error', result.message, 'error');
+            }
+        })
+        .catch((error) => {
+            this.showToast('Error', error.body?.message || 'An unexpected error occurred.', 'error');
+        })
+        .finally(() => {
+            this.isLoading = false;
+        });
+}
+
+    handleRefresh() {
+        this.getBatchStatus();
     }
 
+
     getBatchStatus() {
-        this.isLoading = true;
-        getScheduleStatus()
-            .then(result => {
-                this.isButtonDisabled = result.isScheduled;
-            })
-            .catch(error => {
-                this.showToast('Error', error.body?.message || 'An error occurred.', 'error');
-            })
-            .finally(() => {
-                this.isLoading = false;
-            });
-    }
+    this.isLoading = true;
+
+    getScheduleStatus()
+        .then((result) => {
+            this.scheduleStatus = result;
+            console.log('Schedule Status:', result);
+          //  this.isButtonDisabled = result.isScheduled;
+        })
+        .catch((error) => {
+            this.showToast('Error', error.body?.message || 'An unexpected error occurred.', 'error');
+        })
+        .finally(() => {
+            this.isLoading = false;
+        });
+}
 
     showToast(title, message, variant) {
         this.dispatchEvent(new ShowToastEvent({ title, message, variant }));
@@ -51,5 +70,17 @@ export default class BatchConfigurationComponent extends LightningElement {
 
     handleFinish() {
         this.dispatchEvent(new CustomEvent('finish'));
+    }
+
+    get messageClass() {
+        if (!this.scheduleStatus?.isScheduled) {
+            return 'slds-notify slds-notify_alert slds-theme_warning slds-m-vertical_medium';
+        }
+
+        if (this.scheduleStatus.message?.includes('paused')) {
+            return 'slds-notify slds-notify_alert slds-theme_warning slds-m-vertical_medium';
+        }
+
+        return 'slds-notify slds-notify_alert slds-theme_success slds-m-vertical_medium';
     }
 }

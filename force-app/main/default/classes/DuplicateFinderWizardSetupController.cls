@@ -1,6 +1,6 @@
 public with sharing class DuplicateFinderWizardSetupController {
     
-    @AuraEnabled(cacheable=true)
+    @AuraEnabled
     public static String getAgentId(String developerName) {
         List<BotDefinition> bots = [SELECT Id
                                     FROM BotDefinition
