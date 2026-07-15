@@ -10,13 +10,9 @@
             </template>
 
             <template if:false={isLoading}>
-               <!-- <p class="intro">
-                Schedule the cleanup job to automatically delete Custom Field History records older than one week.
-                </p> -->
-
                 <div class="intro-section slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
                     <p class="intro">
-                       Complete the following configuration before running your first duplicate scan.
+                      Schedule the cleanup job to automatically delete Custom Field History records older than one week.
                     </p>
 
                     <lightning-button-icon
@@ -33,10 +29,7 @@
                 <div class="step-card">
 
                     <h2>Weekly Cleanup Job</h2>
-
-                    <p>
-                    The cleanup job:
-                    </p>
+                    <p> The cleanup job:</p>
 
                     <ol>
                         <li>Runs every Monday at 10:00 AM.</li>
@@ -63,7 +56,6 @@
                 </div>
 
                 <div class="footer">
-
                     <lightning-button
                         label="Previous"
                         onclick={handlePrevious}>
@@ -75,7 +67,6 @@
                         disabled={disableNext}
                         onclick={handleFinish}>
                     </lightning-button>
-
                 </div>
             </template>
         </div>

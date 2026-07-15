@@ -11,7 +11,7 @@ export default class ConfigurationComponent extends LightningElement {
     }
 
     loadStatus() {
-         this.isLoading = true;
+        this.isLoading = true;
         getConfigurationStatus()
             .then(result => {
                 this.status = result;
@@ -34,7 +34,6 @@ export default class ConfigurationComponent extends LightningElement {
     }
 
     get recordLimitStatus() {
-
         if(!this.status?.isRecordLimitConfigured){
             return 'Not Configured';
         }

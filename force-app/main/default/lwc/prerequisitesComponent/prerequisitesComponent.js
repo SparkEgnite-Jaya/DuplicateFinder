@@ -4,22 +4,12 @@ import getPrerequisitesStepStatus from '@salesforce/apex/PrerequisitesComponentC
 export default class PrerequisitesComponent extends LightningElement {
 
     status;
-   // permissionDone = false;
-    //agentDone = false;
     isLoading = true;
 
     get disableNext() {
-        console.log(
-        'disableNext',
-        this.isLoading,
-        this.status?.isPermissionSetAssigned,
-        this.status?.isAgentActive
-    );
-
-    return this.isLoading || !(
-        this.status?.isPermissionSetAssigned &&
-        this.status?.isAgentActive
-    );
+        return this.isLoading || !(
+                this.status?.isPermissionSetAssigned &&
+                this.status?.isAgentActive);
     }
 
     connectedCallback() {
@@ -31,9 +21,6 @@ export default class PrerequisitesComponent extends LightningElement {
 
         getPrerequisitesStepStatus()
             .then(result => {
-                console.log('result', result);
-                //this.permissionDone = result.isPermissionSetAssigned;
-               // this.agentDone = result.isAgentActive;
                this.status = result;
             })
             .catch(error => {
@@ -75,7 +62,6 @@ export default class PrerequisitesComponent extends LightningElement {
 
         return 'Configured';
     }
-
 
     get metadataIcon() {
         return this.getStatusIcon(this.status?.isPermissionSetAssigned);

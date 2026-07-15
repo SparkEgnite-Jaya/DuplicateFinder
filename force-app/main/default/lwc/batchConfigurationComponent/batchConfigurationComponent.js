@@ -16,49 +16,44 @@ export default class BatchConfigurationComponent extends LightningElement {
     }
   
     handleSchedule() {
-    this.isLoading = true;
+        this.isLoading = true;
 
-    scheduleWeeklyCleanup()
-        .then((result) => {
-            this.scheduleStatus = result;
-             console.log('scheduleWeeklyCleanup  Status:', result);
-           // this.isButtonDisabled = result.isScheduled;
+        scheduleWeeklyCleanup()
+            .then((result) => {
+                this.scheduleStatus = result;
 
-            if (result.isScheduled) {
-                this.showToast('Success', result.message, 'success');
-            } else {
-                this.showToast('Error', result.message, 'error');
-            }
-        })
-        .catch((error) => {
-            this.showToast('Error', error.body?.message || 'An unexpected error occurred.', 'error');
-        })
-        .finally(() => {
-            this.isLoading = false;
-        });
-}
+                if (result.isScheduled) {
+                    this.showToast('Success', result.message, 'success');
+                } else {
+                    this.showToast('Error', result.message, 'error');
+                }
+            })
+            .catch((error) => {
+                this.showToast('Error', error.body?.message || 'An unexpected error occurred.', 'error');
+            })
+            .finally(() => {
+                this.isLoading = false;
+            });
+    }
 
     handleRefresh() {
         this.getBatchStatus();
     }
 
-
     getBatchStatus() {
-    this.isLoading = true;
+        this.isLoading = true;
 
-    getScheduleStatus()
-        .then((result) => {
-            this.scheduleStatus = result;
-            console.log('Schedule Status:', result);
-          //  this.isButtonDisabled = result.isScheduled;
-        })
-        .catch((error) => {
-            this.showToast('Error', error.body?.message || 'An unexpected error occurred.', 'error');
-        })
-        .finally(() => {
-            this.isLoading = false;
-        });
-}
+        getScheduleStatus()
+            .then((result) => {
+                this.scheduleStatus = result;
+            })
+            .catch((error) => {
+                this.showToast('Error', error.body?.message || 'An unexpected error occurred.', 'error');
+            })
+            .finally(() => {
+                this.isLoading = false;
+            });
+    }
 
     showToast(title, message, variant) {
         this.dispatchEvent(new ShowToastEvent({ title, message, variant }));
