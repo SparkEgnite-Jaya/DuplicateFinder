@@ -7,7 +7,7 @@ public class DF_ConfigurationController {
         @AuraEnabled public Boolean isReady;
     }
 
-    @AuraEnabled(cacheable=true)
+    @AuraEnabled
     public static ConfigurationStatus getConfigurationStatus() {
         ConfigurationStatus status = new ConfigurationStatus();
 

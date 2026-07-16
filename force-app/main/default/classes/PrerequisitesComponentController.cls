@@ -5,7 +5,7 @@ public class PrerequisitesComponentController {
         @AuraEnabled public Boolean isPermissionSetAssigned;
     }
     
-    @AuraEnabled(cacheable=true)
+    @AuraEnabled
     public static PrerequisitesStatusWrapper getPrerequisitesStepStatus() {
         
         PrerequisitesStatusWrapper response = new PrerequisitesStatusWrapper();

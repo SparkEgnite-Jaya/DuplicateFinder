@@ -48,6 +48,31 @@
     min-height: 300px;
 }
 
-.status-blue {
+.status-button-blue {
     --slds-c-icon-color-foreground-default: #066afe;
+}
+
+.status-button-red {
+    --slds-c-icon-color-foreground-default: #BA0517;
+}
+
+.status {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-weight: 600;
+}
+
+.intro-section {
+    margin-bottom: 1rem;
+    gap: 1rem;
+}
+
+.intro {
+    margin: 0;
+    flex: 1;
+}
+
+.refresh-btn {
+    flex-shrink: 0;
 }

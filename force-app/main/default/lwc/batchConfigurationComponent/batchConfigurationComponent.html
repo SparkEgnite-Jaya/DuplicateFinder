@@ -10,17 +10,26 @@
             </template>
 
             <template if:false={isLoading}>
-                <p class="intro">
-                Schedule the cleanup job to automatically delete Custom Field History records older than one week.
-                </p>
+                <div class="intro-section slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                    <p class="intro">
+                      Schedule the cleanup job to automatically delete Custom Field History records older than one week.
+                    </p>
+
+                    <lightning-button-icon
+                        icon-name="utility:refresh"
+                        alternative-text="Refresh"
+                        title="Refresh Status"
+                        onclick={handleRefresh}
+                        variant="border-filled"
+                        class="refresh-btn"
+                        disabled={isLoading}>
+                    </lightning-button-icon>
+                </div>
 
                 <div class="step-card">
 
                     <h2>Weekly Cleanup Job</h2>
-
-                    <p>
-                    The cleanup job:
-                    </p>
+                    <p> The cleanup job:</p>
 
                     <ol>
                         <li>Runs every Monday at 10:00 AM.</li>
@@ -29,6 +38,12 @@
                         <li>No administrator intervention is required.</li>
                         <li>Click <strong>Start Batch</strong> to schedule the weekly cleanup job.</li>
                     </ol>
+
+                    <template if:true={scheduleStatus.message}>
+                        <div class={messageClass} role="alert">
+                            <span>{scheduleStatus.message}</span>
+                        </div>
+                    </template>
 
                     <lightning-button 
                         variant="brand" 
@@ -41,7 +56,6 @@
                 </div>
 
                 <div class="footer">
-
                     <lightning-button
                         label="Previous"
                         onclick={handlePrevious}>
@@ -53,7 +67,6 @@
                         disabled={disableNext}
                         onclick={handleFinish}>
                     </lightning-button>
-
                 </div>
             </template>
         </div>

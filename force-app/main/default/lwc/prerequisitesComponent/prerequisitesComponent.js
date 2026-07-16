@@ -3,12 +3,13 @@ import getPrerequisitesStepStatus from '@salesforce/apex/PrerequisitesComponentC
 
 export default class PrerequisitesComponent extends LightningElement {
 
-    permissionDone = false;
-    agentDone = false;
+    status;
     isLoading = true;
 
     get disableNext() {
-        return this.isLoading || !(this.permissionDone && this.agentDone);
+        return this.isLoading || !(
+                this.status?.isPermissionSetAssigned &&
+                this.status?.isAgentActive);
     }
 
     connectedCallback() {
@@ -20,9 +21,7 @@ export default class PrerequisitesComponent extends LightningElement {
 
         getPrerequisitesStepStatus()
             .then(result => {
-                console.log('result', result);
-                this.permissionDone = result.isPermissionSetAssigned;
-                this.agentDone = result.isAgentActive;
+               this.status = result;
             })
             .catch(error => {
                 this.showToast('Error', error.body?.message || 'An error occurred.', 'error');
@@ -30,6 +29,10 @@ export default class PrerequisitesComponent extends LightningElement {
             .finally(() => {
                 this.isLoading = false;
             });
+    }
+
+    handleRefresh() {
+       this.loadPrerequisiteStatus();
     }
 
     handlePrevious() {
@@ -42,5 +45,45 @@ export default class PrerequisitesComponent extends LightningElement {
 
     showToast(title, message, variant) {
         this.dispatchEvent(new ShowToastEvent({ title, message, variant }));
+    }
+
+    get metadataStatus() {
+        console.log('metadataStatus', this.status.isPermissionSetAssigned);
+        return this.status?.isPermissionSetAssigned
+            ? 'Configured'
+            : 'Not Configured';
+    }
+
+    get recordLimitStatus() {
+
+        if(!this.status?.isAgentActive){
+            return 'Not Configured';
+        }
+
+        return 'Configured';
+    }
+
+    get metadataIcon() {
+        return this.getStatusIcon(this.status?.isPermissionSetAssigned);
+    }
+
+    get recordLimitIcon() {
+        return this.getStatusIcon(this.status?.isAgentActive);
+    }
+
+    getStatusIcon(isConfigured) {
+        return isConfigured ? 'utility:success' : 'utility:error';
+    }
+
+    get metadataIconClass() {
+        return this.getIconClass(this.status?.isPermissionSetAssigned);
+    }
+
+    get recordLimitIconClass() {
+        return this.getIconClass(this.status?.isAgentActive);
+    }
+
+    getIconClass(isConfigured) {
+        return isConfigured ? 'status-button-blue' : 'status-button-red';
     }
 }

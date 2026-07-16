@@ -9,19 +9,26 @@
             </template>
 
             <template if:false={isLoading}>
+                 <div class="intro-section slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                    <p class="intro">
+                       Complete the following configuration before running your first duplicate scan.
+                    </p>
 
-                <p class="intro">
-                    Complete the following configuration before running your first duplicate scan.
-                </p>
+                    <lightning-button-icon
+                        icon-name="utility:refresh"
+                        alternative-text="Refresh"
+                        title="Refresh Status"
+                        onclick={handleRefresh}
+                        variant="border-filled"
+                        class="refresh-btn"
+                        disabled={isLoading}>
+                    </lightning-button-icon>
+                </div>
 
                 <!-- Custom Metadata Setting -->
                 <div class="step-card">
-
                     <h2>Custom Metadata Configuration</h2>
-
-                    <p>
-                        Create a configuration record for each object that you want Duplicate Finder to scan.
-                    </p>
+                    <p>Create a configuration record for each object that you want Duplicate Finder to scan.</p>
 
                     <ol> 
                         <li>Go to <strong>Setup</strong>.</li>
@@ -34,7 +41,6 @@
                     </ol>
 
                     <div class="status">
-
                         <lightning-icon
                             icon-name={metadataIcon}
                             class={metadataIconClass}
@@ -42,19 +48,13 @@
                         </lightning-icon>
 
                         <span>{metadataStatus}</span>
-
                     </div>
-
                 </div>
 
                 <!-- Custom Setting  -->
                 <div class="step-card">
-
                     <h2>Custom Setting Configuration</h2>
-
-                    <p>
-                        Configure maximum number of duplicate records to display in the search results.
-                    </p>
+                    <p>Configure maximum number of duplicate records to display in the search results.</p>
 
                     <ol> 
                         <li>Go to <strong>Setup</strong>.</li>
@@ -67,20 +67,18 @@
                     </ol>
 
                     <div class="status">
-                    <lightning-icon
-                            icon-name={recordLimitIcon}
-                            class={recordLimitIconClass}
-                            size="small">
+                        <lightning-icon
+                                icon-name={recordLimitIcon}
+                                class={recordLimitIconClass}
+                                size="small">
                         </lightning-icon>
 
                         <span>{recordLimitStatus}</span>
-
                     </div>
 
                 </div>
 
                 <div class="footer">
-
                     <lightning-button
                         label="Previous"
                         onclick={handlePrevious}>
@@ -92,10 +90,8 @@
                         disabled={disableNext}
                         onclick={handleNext}>
                     </lightning-button>
-
                 </div>
             </template>        
         </div>
-
     </lightning-card>
 </template>
