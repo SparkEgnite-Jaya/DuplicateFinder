@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <GenAiPlannerBundle xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <description>This agent will help to find duplicates for given object and provide list or duplicate records. also help to merge records.</description>
-    <localActionLinks>
+ <!--   <localActionLinks>
         <genAiFunctionName>AnswerQuestionsWithKnowledge_16jdL0000038MUf</genAiFunctionName>
-    </localActionLinks>
+    </localActionLinks> -->
     <localTopicLinks>
         <genAiPluginName>Duplicate_and_Merging_Management_16jdL0000038MUf</genAiPluginName>
     </localTopicLinks>
@@ -38,9 +38,9 @@
             <sortOrder>2</sortOrder>
         </genAiPluginInstructions>
         <language>en_US</language>
-        <localActionLinks>
+       <!-- <localActionLinks>
             <functionName>GetRecordDetails_179dL000004Mr1l</functionName>
-        </localActionLinks>
+        </localActionLinks> -->
         <localActionLinks>
             <functionName>Validate_Duplicate_Fields_179dL000004Mr1l</functionName>
         </localActionLinks>
@@ -92,7 +92,7 @@
             <progressIndicatorMessage>Validating Fields....</progressIndicatorMessage>
             <source>Validate_Duplicate_Fields</source>
         </localActions>
-        <localActions>
+       <!-- <localActions>
             <fullName>GetRecordDetails_179dL000004Mr1l</fullName>
             <description>Generates a text blob containing record details, including object fields and values and records from related lists.</description>
             <developerName>GetRecordDetails_179dL000004Mr1l</developerName>
@@ -104,7 +104,7 @@
             <masterLabel>Get Record Details</masterLabel>
             <progressIndicatorMessage>Getting details</progressIndicatorMessage>
             <source>EmployeeCopilot__GetRecordDetails</source>
-        </localActions>
+        </localActions> -->
         <localDeveloperName>Duplicate_and_Merging_Management</localDeveloperName>
         <masterLabel>Duplicate and Merging Management</masterLabel>
         <pluginType>Topic</pluginType>
