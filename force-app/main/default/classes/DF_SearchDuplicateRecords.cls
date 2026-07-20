@@ -1,30 +1,30 @@
 public class DF_SearchDuplicateRecords {
     
     public class DuplicateSearchInput { 
-        @InvocableVariable(required=true) public String objectName; 
-        @InvocableVariable(required=true) public String recordId; 
-        @InvocableVariable(required=true) public List<String> fieldNames; 
+        @InvocableVariable(required=true) @AuraEnabled public String objectName; 
+        @InvocableVariable(required=true) @AuraEnabled public String recordId; 
+        @InvocableVariable(required=true) @AuraEnabled public List<String> fieldNames; 
     }
     
     public class DuplicateSearchOutput {
-        @InvocableVariable public Boolean success;
-        @InvocableVariable public String message;
-        @InvocableVariable public Integer duplicateCount;
-        @InvocableVariable public DuplicateRecordsInfo duplicateRecords;
+        @InvocableVariable @AuraEnabled public Boolean success;
+        @InvocableVariable @AuraEnabled public String message;
+        @InvocableVariable @AuraEnabled public Integer duplicateCount;
+        @InvocableVariable @AuraEnabled public DuplicateRecordsInfo duplicateRecords;
     }
     
-    public class DuplicateRecordsInfo{
-        @InvocableVariable public List<DuplicateRecordInfo> lstDuplicateRecordInfo;
+    public class DuplicateRecordsInfo {
+        @InvocableVariable @AuraEnabled public List<DuplicateRecordInfo> lstDuplicateRecordInfo;
     }
     
     public class DuplicateRecordInfo {
-        @InvocableVariable public Id recordId;
-        @InvocableVariable public List<MatchedField> matchedFields;
+        @InvocableVariable @AuraEnabled public Id recordId;
+        @InvocableVariable @AuraEnabled public List<MatchedField> matchedFields;
     }
     
     public class MatchedField {
-        @InvocableVariable public String fieldName;
-        @InvocableVariable public String fieldValue;
+        @InvocableVariable @AuraEnabled public String fieldName;
+        @InvocableVariable @AuraEnabled public String fieldValue;
     }
     
     @InvocableMethod(label='Find Duplicate Records'
