@@ -27,8 +27,7 @@ public class DF_SearchDuplicateRecords {
         @InvocableVariable @AuraEnabled public String fieldValue;
     }
     
-    @InvocableMethod(label='Find Duplicate Records'
-                     description='Find duplicate records using configured fields')
+    @InvocableMethod(label='Find Duplicate Records' description='Find duplicate records using configured fields')
     public static List<DuplicateSearchOutput> findDuplicates(List<DuplicateSearchInput> duplicateSearchInputs) {
         List<DuplicateSearchOutput> duplicateSearchOutputs = new List<DuplicateSearchOutput>();
         
